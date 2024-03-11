@@ -27,12 +27,14 @@
 *.lib
 
 # Executables
+main
 *.exe
 *.out
 *.app
 
 # VSCode .gitignore
 
+*/.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
