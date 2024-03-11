@@ -34,7 +34,7 @@ main
 
 # VSCode .gitignore
 
-*/.vscode
+.vscode/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
