@@ -1,0 +1,18 @@
+{
+    "option": {
+        "n_max_iter": 100,
+        "tol_res": 1e-6,
+        "tol_step": 1e-6,
+        "alpha0": 1,
+        "mu": 0.2,
+        "sigma": 0.3
+    },
+    "function": {
+        "func": "x1*x2+4*x1*x1*x1*x1+x2*x2+3*x1",
+        "grad": "x2+16*x1*x1*x1+3 , x1+2*x2"
+    },
+    "point": {
+        "x1": 0,
+        "x2": 0
+    }
+  }

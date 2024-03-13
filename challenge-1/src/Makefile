@@ -1,8 +1,8 @@
-# compiling variables
+# compiler variables
 
 CXXFLAGS = -std=c++20 -O2 -fPIC
-CPPFLAGS = -DNDEBUG -I${mkEigenInc} -I../include
-LDFLAGS = -L. -Wl,-rpath=${PWD}
+CPPFLAGS = -DNDEBUG -I/home/claudius/PACS/pacs-examples/Examples/include -I../include
+LDFLAGS = -L. -Wl,-rpath=${PWD} -L/home/claudius/PACS/pacs-examples/Examples/lib
 LDLIBS = 
 
 # files

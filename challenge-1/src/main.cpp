@@ -1,7 +1,10 @@
-#include <Eigen/Dense>
 #include <iostream>
+#include <fstream>
+#include "parameters.hpp"
+#include "json.hpp"
+
 
 int main(){
-    std::cout << "HI folks uu" << std::endl;
+    parameters p = read_parameters("../data/data.json");
     return 0;
 }
