@@ -1,8 +1,13 @@
+#path to s libraries
+ADDITIONAL_PATH := 
+EXAMPLES_INCLUDE = /home/claudius/PACS/pacs-examples/Examples/include
+MY_INCLUDE = ../include
+EXAMPLES_LIB = /home/claudius/PACS/pacs-examples/Examples/lib
 # compiler variables
 
 CXXFLAGS = -std=c++20 -O2 -fPIC
-CPPFLAGS = -DNDEBUG -I/home/claudius/PACS/pacs-examples/Examples/include -I../include
-LDFLAGS = -L. -Wl,-rpath=${PWD} -L/home/claudius/PACS/pacs-examples/Examples/lib
+CPPFLAGS = -DNDEBUG -I${EXAMPLES_INCLUDE} -I${MY_INCLUDE}
+LDFLAGS = -L. -Wl,-rpath=$(ADDITIONAL_PATH) -L${EXAMPLES_LIB}
 LDLIBS = 
 
 # files

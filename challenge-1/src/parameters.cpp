@@ -1,20 +1,44 @@
-#include "parameters.hpp"
 #include <string>
+#include <iostream>
 #include <fstream> 
+#include "parameters.hpp"
 #include "json.hpp"
 
-using json = nlohmann::json;
 
-parameters read_parameters(const std::string & file_name){
+Parameters readParameters(const std::string & parFileName){
+    //
+    Parameters parameters;
+    Parameters defaultParameters;
+
     //reading json file with data
-    std::ifstream f(file_name);
-    json data = json::parse(f);
-    const unsigned int n_max_iter = data["option"].value("n_max_iter", 0.0);
-    const double tol_res = data["option"].value("tol_res", 0.0);
-    const double tol_step = data["option"].value("tol_step", 0.0);
-    const double alpha0 = data["option"].value("alpha0", 0.0);
-    const double mu = data["option"].value("mu", 0.0);
-    const double sigma = data["option"].value("sigma", 0.0);
+    std::ifstream f(parFileName);
+    nlohmann::json parFile = nlohmann::json::parse(f);      
 
-    return {n_max_iter,tol_res,tol_step,alpha0,mu,sigma};
+    //option
+    parameters.maxIter = parFile["option"].value("n_max_iter", defaultParameters.maxIter);
+    parameters.resTol = parFile["option"].value("tol_res", defaultParameters.resTol);
+    parameters.stepTol = parFile["option"].value("tol_step", defaultParameters.stepTol);
+    parameters.alpha0 = parFile["option"].value("alpha0", defaultParameters.alpha0);
+    parameters.mu = parFile["option"].value("mu", defaultParameters.mu);
+    parameters.sigma = parFile["option"].value("sigma", defaultParameters.sigma);
+
+    //point
+    parameters.x = {parFile["point"].value("x1", 0.0),parFile["point"].value("x2", 0.0)};
+
+    return parameters;
+}
+
+void Parameters::print() const{
+    std::cout << std::endl;
+    std::cout << " \t ### OPTION ###" << std::endl;
+    std::cout << " Maximum number of iterations : " << maxIter << std::endl;
+    std::cout << " Tolerance on the residual : " << resTol << std::endl;
+    std::cout << " Tolerance on the steps : " << resTol << std::endl;
+    std::cout << " alpha 0 : " << alpha0 << std::endl;
+    std::cout << " mu = " << mu << std::endl;
+    std::cout << " sigma = " << sigma << std::endl;
+    std::cout << std::endl;
+    std::cout << " \t ### STARTING POINT ###" << std::endl;
+    std::cout << "x = (" << x[0] << "," << x[1]<< ")" << std::endl;
+    std::cout << std::endl;
 }
