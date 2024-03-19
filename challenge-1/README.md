@@ -1,14 +1,14 @@
 # Gradient Descent Implementation
 
-This repository contains an implementation of the gradient descent optimization algorithm.
+This repository contains an implementation of the gradient descent optimization algorithm given as challenge for the PACS course 2023/24
 
 ## Overview
 
-Gradient descent is an iterative optimization algorithm used to minimize some function by iteratively moving in the direction of steepest descent as defined by the negative of the gradient. It's commonly used in machine learning for optimizing parameters of a model.
+Gradient descent is an iterative optimization algorithm used to minimize some function by iteratively moving in the direction of steepest descent as defined by the negative of the gradient. More detail about the requests in the doc folder
 
 ## Implementation Details
 
-The gradient descent algorithm implemented in this repository is designed to minimize a given objective function. The objective function and its gradient are provided in a C++ file named `functions.cpp`, and the initial parameters are specified in a JSON file named `parameters.json`.
+The gradient descent algorithm implemented in this repository is designed to minimize a given objective function. The objective function and its gradient are provided in a C++ file named `functions.cpp`, and the initial parameters are specified in a JSON file named `parameters.json` and stored in `Struct Parameters` defined in `parameters.hpp` . Additionally, the optimization algorithm according to the selected strategy is implemented in `gradientMethod.cpp`.
 
 ## How to Use
 
@@ -40,30 +40,10 @@ To use the gradient descent implementation in your project, follow these steps:
     }
     ```
 
-    - `option`: Specifies the optimization options including the maximum number of iterations (`n_max_iter`), tolerance for the residual (`tol_res`), tolerance for the step (`tol_step`), initial step size (`alpha0`), damping parameter for Armijo strategy (`mu`), and scale parameter for Armijo strategy (`sigma`).
+    - `option`: Specifies the optimization options including the maximum number of iterations (`n_max_iter`), tolerance for the residual (`tol_res`), tolerance for the step (`tol_step`), initial step size (`alpha0`), damping parameter (`mu`), and scale parameter for Armijo strategy (`sigma`).
     - `point`: Specifies the starting point for optimization.
     - `strategy`: Specifies the optimization strategy which could be "exponential", "inverse", or "Armijo".
 
-3. If you want to change the objective function, edit the `functions.cpp` file and modify the `objective_function` and `gradient_function` functions.
+3. If you want to change the objective function, edit the `functions.cpp` file and modify `Function` and `Gradient` functors.
 
-4. Compile the C++ code:
-
-    ```bash
-    g++ -o gradient_descent functions.cpp -std=c++11
-    ```
-
-5. Run the compiled executable:
-
-    ```bash
-    ./gradient_descent
-    ```
-
-6. The optimized parameters will be printed to the console.
-
-## Contributing
-
-Contributions are welcome! If you'd like to contribute to this project, please fork the repository and submit a pull request.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+4. Set the `EXAMPLES_INCLUDE` and `EXAMPLES_LIB` variables in the Makefile to point to the locations where you have the examples and libraries provided by the `pacs-examples` repository.
