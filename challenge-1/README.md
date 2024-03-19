@@ -54,4 +54,3 @@ To use the gradient descent implementation in your project, follow these steps:
     cd src
     make
     ```
-7. 
