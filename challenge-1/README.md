@@ -20,7 +20,7 @@ To use the gradient descent implementation in your project, follow these steps:
     git clone https://github.com/your_username/challenges-pacs.git
     ```
 
-2. Modify the `parameters.json` file to specify the optimization options and the starting point:
+2. Modify the `parameters.json` file to specify the optimization options and the starting point (otherwise defaults are provided):
 
     ```json
     {
