@@ -1,6 +1,6 @@
 # Gradient Descent Implementation
 
-This repository contains an implementation of the gradient descent optimization algorithm given as challenge for the PACS course 2023/24
+This repository contains an implementation of the gradient descent optimization algorithm given as challenge for the PACS course 2023/24.
 
 ## Overview
 
@@ -46,7 +46,7 @@ To use the gradient descent implementation in your project, follow these steps:
 
 3. If you want to change the objective function, edit the `functions.cpp` file and modify `Function` and `Gradient` functors.
 
-4. Set the `EXAMPLES_INCLUDE` and `EXAMPLES_LIB` variables in the Makefile to point to the locations where you have the examples and libraries provided by the `pacs-examples` repository.
+4. Set the `EXAMPLES_INCLUDE` and `EXAMPLES_LIB` variables in the Makefile to point to the locations where you have the examples and libraries provided by the `pacs-examples` repository. (it is intended for people who are enrolled in the course, if not the only thing you need is the `json.h` header so set them in order to reach it)
 
 6. Run `make` command in the `src` directory:
 
