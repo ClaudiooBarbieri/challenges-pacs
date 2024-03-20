@@ -48,9 +48,10 @@ To use the gradient descent implementation in your project, follow these steps:
 
 4. Set the `EXAMPLES_INCLUDE` and `EXAMPLES_LIB` variables in the Makefile to point to the locations where you have the examples and libraries provided by the `pacs-examples` repository. (it is intended for people who are enrolled in the course, if not the only thing you need is the `json.h` header so set them in order to reach it)
 
-6. Run `make` command in the `src` directory:
+6. Run `make` command in the `src` directory and execute the `main`:
 
     ```bash
     cd src
     make
+    ./main
     ```
