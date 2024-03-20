@@ -3,12 +3,13 @@
         "n_max_iter": 100,
         "tol_res": 1e-6,
         "tol_step": 1e-6,
-        "alpha0": 0.2,
+        "alpha0": 0.25,
         "mu": 0.2,
         "sigma": 0.3
     },
     "point": {
         "x1": 0,
         "x2": 0
-    }
+    },
+    "strategy":"inverse"
 }

@@ -8,12 +8,6 @@
 
 typedef std::vector<double> Point;
 
-enum class Strategy {
-    EXPONENTIAL,
-    INVERSE,
-    ARMIJO
-};
-
 template<Strategy S>
 std::pair<Point,unsigned int> argmin(const Parameters & parameters, const Function & f , const Gradient & df);
 
