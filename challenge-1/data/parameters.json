@@ -11,5 +11,5 @@
         "x1": 0,
         "x2": 0
     },
-    "strategy":"inverse"
+    "strategy":"in"
 }

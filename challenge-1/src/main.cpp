@@ -20,7 +20,7 @@ int main(){
     Function f;
     Gradient df;
     // Declare result
-    std::pair<Point,unsigned int> result;
+    std::pair<Point,unsigned int> result{parameters.x,parameters.maxIter};
     // Perform optimization based on selected strategy
     switch (parameters.s) {
         case Strategy::EXPONENTIAL:

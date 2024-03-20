@@ -4,17 +4,17 @@
 #include "parameters.hpp"
 #include "json.hpp"
 
+/// Read parameters from a JSON file.
 
 Parameters readParameters(const std::string & parFileName){
-    //
-    Parameters parameters;
-    Parameters defaultParameters;
+    Parameters parameters; ///< Parameters object to hold the read parameters
+    Parameters defaultParameters; ///< Default parameters used when values are not provided in the JSON file
 
-    //reading json file with data
+    // Reading JSON file with data
     std::ifstream f(parFileName);
     nlohmann::json parFile = nlohmann::json::parse(f);      
 
-    //option
+    // Read options
     parameters.maxIter = parFile["option"].value("n_max_iter", defaultParameters.maxIter);
     parameters.resTol = parFile["option"].value("tol_res", defaultParameters.resTol);
     parameters.stepTol = parFile["option"].value("tol_step", defaultParameters.stepTol);
@@ -22,13 +22,15 @@ Parameters readParameters(const std::string & parFileName){
     parameters.mu = parFile["option"].value("mu", defaultParameters.mu);
     parameters.sigma = parFile["option"].value("sigma", defaultParameters.sigma);
 
-    //point
-    parameters.x = {parFile["point"].value("x1", 0.0),parFile["point"].value("x2", 0.0)};
+    // Read starting point
+    parameters.x = {parFile["point"].value("x1", 0.0), parFile["point"].value("x2", 0.0)};
 
-    parameters.s = stringToStrategy(parFile["strategy"]);
+    parameters.s = stringToStrategy(parFile["strategy"]); ///< Convert strategy string to enum
 
-    return parameters;
+    return parameters; ///< Return the read parameters
 }
+
+/// Print parameters to standard output.
 
 void Parameters::print() const{
     std::cout << std::endl;
@@ -46,6 +48,8 @@ void Parameters::print() const{
     std::cout << std::endl;
 }
 
+/// Convert Strategy enum to string.
+
 std::string strategyToString(const Strategy & s){
     switch (s) {
         case Strategy::EXPONENTIAL:
@@ -57,6 +61,8 @@ std::string strategyToString(const Strategy & s){
     }
     return "not valid strategy!";
 }
+
+/// Convert string to Strategy enum.
 
 Strategy stringToStrategy(const std::string & str){
     if (str == "exponential") {
