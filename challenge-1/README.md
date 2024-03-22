@@ -17,7 +17,7 @@ To use the gradient descent implementation in your project, follow these steps:
 1. Clone this repository to your local machine:
 
     ```bash
-    git clone https://github.com/your_username/challenges-pacs.git
+    git@github.com:ClaudiooBarbieri/challenges-pacs.git
     ```
 
 2. Modify the `parameters.json` file to specify the optimization options and the starting point (otherwise defaults are provided):
