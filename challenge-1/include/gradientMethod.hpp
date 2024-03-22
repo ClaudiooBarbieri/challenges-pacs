@@ -14,6 +14,13 @@ typedef std::vector<double> Point;
 template<Strategy S>
 std::pair<Point,unsigned int> argmin(const Parameters & parameters, const Function & f , const Gradient & df);
 
+/// Extern template instantiation for ARMIJO strategy
+extern template std::pair<Point, unsigned int> argmin<Strategy::ARMIJO>(const Parameters & parameters, const Function & f , const Gradient & df);
+/// Extern template instantiation for EXPONENTIAL strategy
+extern template std::pair<Point, unsigned int> argmin<Strategy::EXPONENTIAL>(const Parameters & parameters, const Function & f , const Gradient & df);
+/// Extern template instantiation for INVERSE strategy
+extern template std::pair<Point, unsigned int> argmin<Strategy::INVERSE>(const Parameters & parameters, const Function & f , const Gradient & df);
+
 /// Exponential decay function for determining step size
 
 double expDecay(const Parameters & parameters, unsigned int k);

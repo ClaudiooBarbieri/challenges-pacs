@@ -48,11 +48,11 @@ std::pair<Point,unsigned int> argmin(const Parameters & parameters, const Functi
     return {xNew, iter}; ///< Return the minimum point and the number of iterations
 }
 
-/// Template instantiation for ARMIJO strategy
+/// Explicit template instantiation for ARMIJO strategy
 template std::pair<Point, unsigned int> argmin<Strategy::ARMIJO>(const Parameters & parameters, const Function & f , const Gradient & df);
-/// Template instantiation for EXPONENTIAL strategy
+/// Explicit template instantiation for EXPONENTIAL strategy
 template std::pair<Point, unsigned int> argmin<Strategy::EXPONENTIAL>(const Parameters & parameters, const Function & f , const Gradient & df);
-/// Template instantiation for INVERSE strategy
+/// Explicit template instantiation for INVERSE strategy
 template std::pair<Point, unsigned int> argmin<Strategy::INVERSE>(const Parameters & parameters, const Function & f , const Gradient & df);
 
 /// Exponential decay function for determining step size
