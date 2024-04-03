@@ -1,0 +1,7 @@
+Great structuring of the github.
+Also the README is well done.
+
+There is no muParser.
+Having a function with all the functions is so C style. I like it :)
+
+Implementation and comments are very good. Great job!
