@@ -8,6 +8,8 @@
 #include <fstream>
 #include <istream>
 #include <sstream>
+#include <limits>
+#include <stdexcept>
 
 namespace algebra{
 
@@ -73,6 +75,31 @@ namespace algebra{
 
         /// storage of non zero elements in compressed state
         CompressedData<T> cData;
+
+        /// check if index is coherent with matrix sizes
+        bool indexInBound(size_t i,size_t j) const {
+            return i<rows && j<cols;
+        }
+
+        /**
+         * @brief corresponding index in non zero value vector of compressed storage
+         * @return index or -1 if correspond to zero value element
+        **/
+        int getIndex(size_t i, size_t j) const {
+            if constexpr(Order == StorageOrder::RowWise){
+                for(size_t r = cData.innerIdx[i] ; r < cData.innerIdx[i+1]; r++){ ///< loop over element of row i
+                    if(cData.outerIdx[r] == j) ///< check if the column index correspond to the given one j
+                        return r; ///< return index of non zero value in non zero element vector
+                    }
+            }
+            else if constexpr(Order == StorageOrder::ColWise){
+                for(size_t r = cData.innerIdx[j] ; r < cData.innerIdx[j+1]; r++){ ///< loop over element of col j
+                    if(cData.outerIdx[r] == i) ///< check if the column index correspond to the given one i
+                        return r; ///< return index of non zero value in non zero element vector
+                    }
+                }
+            return -1;
+        }
 
         /// print vectors of the compressed state format
 
@@ -219,14 +246,47 @@ namespace algebra{
         }
 
         /**
-         * @brief non const call operator
+         * @brief non const call operator add or change value of element at index i,j
          * @note if uncompressed can change and add, if compressed just change existing
         **/
+        T& operator()(size_t i, size_t j){
+            if(!this->indexInBound(i,j)){
+                throw std::out_of_range("Indices are out of bounds"); ///< throw exception, not valid index
+            }
+            if(this->isCompressed()){
+                int idx = this->getIndex(i,j); ///< get index of possible non zero value element
+                if(idx==-1){
+                    throw std::invalid_argument("Cannot modify non zero value in compressed state"); ///< cannot change a zero valued element
+                }
+                else{
+                    return cData.nzElem[idx];
+                }
+            }   
+            else{
+                return uData[{i,j}];
+            }
+        }
+
 
         /**
-         * @brief const call operator
-         * @return 0 if present, NaN if out of bound
+         * @brief const call operator, give the value at index i,j
+         * @note if out of bound throw an exception
         **/
+        const T operator()(size_t i, size_t j) const{
+            if(this->indexInBound(i,j)){
+                if(this->isCompressed()){
+                    int idx = this->getIndex(i,j);
+                    return idx==-1 ? 0 : cData.nzElem[idx]; ///< return value at index i,j, -1 means zero valued element
+                }
+                else{
+                    const auto it = uData.find({i,j}); ///< iterator to element of index (i,j) if exists
+                    return it!=uData.end() ? it->second : 0; ///< if the iteretor is not the end return the corrisponding value of the non zero element otherwise zero
+                }
+            }
+            else{
+                throw std::out_of_range("Indices are out of bounds"); ///< throw exception, not valid index
+            }
+        }
 
 
         /// check the state of the matrix
@@ -255,11 +315,11 @@ namespace algebra{
                 }
             }
             else{
+                std::cout << "Print Compressed" << std::endl;
                 matrix.printCompressedVector();
             }
             return os;
         }
-    private:
     };
 }
 

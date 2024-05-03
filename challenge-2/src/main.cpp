@@ -16,17 +16,7 @@ int main(){
     
 
     // Instantiate Matrix with ColWise storage order
-    algebra::Matrix<int, algebra::StorageOrder::ColWise> m2(4, 4, m_data);
-
-    /*algebra::nonZeroElem<int> row(m_data.lower_bound({0,0}),m_data.lower_bound({0,3}));
-    for(size_t k=0;k<3;++k){
-        algebra::nonZeroElem<int> row(m_data.lower_bound({k,0}),m_data.lower_bound({k,3}));
-        for( auto v : row){
-        std::cout << v.second <<  "-";
-        }
-        std::cout << row.size() << std::endl;
-    }*/
-    
+    algebra::Matrix<int, algebra::StorageOrder::ColWise> m2(4, 4, m_data);  
 
     // Print matrices
     std::cout << "Matrix with RowWise storage order:" << std::endl;
@@ -47,14 +37,30 @@ int main(){
     m2.uncompress();
     std::cout << m2 << std::endl;
 
-    //algebra::Matrix<double, algebra::StorageOrder::RowWise> m;
+    std::cout << m1 << std::endl;
+    //m2.compress();
+    m1(0,1) = 3;
+    std::cout << m1 << std::endl;
 
+    
     /*
+    std::cout << "-------" << std::endl;
+    std::cout << m1(0,0) << std::endl;
+    std::cout << m1(0,3) << std::endl;
+    std::cout << m1(2,3) << std::endl;
+    std::cout << "-------" << std::endl;
+    std::cout << "-------" << std::endl;
+    std::cout << m2(0,0) << std::endl;
+    std::cout << m2(0,3) << std::endl;
+    std::cout << m2(3,1) << std::endl;
+    std::cout << "-------" << std::endl;
+*/
+    algebra::Matrix<double, algebra::StorageOrder::RowWise> lns__131;
+
     std::string file = "../data/lns__131.mtx";
 
-    m.readMatrix(file);
+    lns__131.readMatrix(file);
     std::cout << "Matrix read:" << std::endl;
-    std::cout << m << std::endl;
-    */
+    //std::cout << lns__131 << std::endl;
     return 0;
 }
