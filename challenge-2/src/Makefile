@@ -25,19 +25,19 @@ SRCS = $(wildcard *.cpp)
 # object file from sources
 OBJS = $(SRCS:.cpp=.o)
 # all headers
-HAEDS =$(wildcard *.hpp)
+HEADS =$(wildcard ${MY_INCLUDE}/*.hpp)
 # exe main
 EXEC = main
 
 .phony = all clean 
 
 # compiling routine
-all : $(SRCS) $(OBJS) $(EXEC)
+all : $(SRCS) $(OBJS) $(EXEC) 
 
 $(EXEC) : $(OBJS)
 	$(CXX) $(LDFLAGS) $(OBJS) -o $(EXEC) $(LDLIBS)
 
-$(OBJS) : $(SRCS)
+$(OBJS) : $(SRCS) $(HEADS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(SRCS)
 
 # removing obj file and main
