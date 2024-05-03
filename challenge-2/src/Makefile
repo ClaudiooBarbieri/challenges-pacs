@@ -1,9 +1,9 @@
-# Variable for path to PACS Examples/
-PACS_ROOT = /home/claudius/PACS/pacs-examples/Examples/
+# Variable for path to PACS Examples
+PACS_ROOT = /home/claudius/PACS/pacs-examples/Examples
 
 # Path for reaching libraries and header providede by pacs-Examples repository
-EXAMPLES_INCLUDE = ${PACS_ROOT}include
-EXAMPLES_LIB = ${PACS_ROOT}lib
+EXAMPLES_INCLUDE = ${PACS_ROOT}/include
+EXAMPLES_LIB = ${PACS_ROOT}/lib
 
 # Path for personal header file
 MY_INCLUDE = ../include
