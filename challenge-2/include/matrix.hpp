@@ -345,13 +345,13 @@ namespace algebra{
             }
         }
 
-        /// matrix vector multiplication  for rowwise
+        /// matrix vector multiplication specification for rowwise
         template<typename U>
-        friend std::vector<U> operator*(const Matrix<U,StorageOrder::RowWise> & matrix, const std::vector<U> & v);
+        friend std::vector<U> operator*(const Matrix<U,StorageOrder::RowWise> & matrix, const std::vector<U> & v) ;
 
-        /// matrix vector multiplication  for colwise
+        /// matrix vector multiplication specification for colwise
         template<typename U>
-        friend std::vector<U> operator*(const Matrix<U,StorageOrder::ColWise> & matrix, const std::vector<U> & v);
+        friend std::vector<U> operator*(const Matrix<U,StorageOrder::ColWise> & matrix, const std::vector<U> & v) ;
 
         /// overload stream operator for the matrix
         friend std::ostream& operator<<(std::ostream& os, const Matrix<T,Order> & matrix) {
@@ -419,6 +419,7 @@ namespace algebra{
         }
         return res;
     }
+
 }
 
 #endif

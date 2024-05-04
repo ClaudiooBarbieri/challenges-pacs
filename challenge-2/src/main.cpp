@@ -1,100 +1,67 @@
 #include <iostream>
+#include "chrono.hpp"
 #include "matrix.hpp"
 
-using ElementType = double;
-using Order = algebra::StorageOrder;
+using ElementType = double; ///< type of element stored in the matrix
+using Order = algebra::StorageOrder; ///< order of storage in memory of the matrix
 template<typename T, Order O>
-using Matrix = algebra::Matrix<T,O>;
+using Matrix = algebra::Matrix<T,O>; 
+
+/**
+ * @brief Prints the results of matrix-vector multiplication tests for each combination of StorageOrder and state of the matrix, compute also the %gain
+ */
+void printResults(double urwTime, double crwTime, double ucwTime, double ccwTime, size_t nIt);
 
 int main(){
 
-    Matrix<ElementType, Order::RowWise> rw_lns__131;
-    Matrix<ElementType, Order::ColWise> cw_lns__131;
-    std::vector<ElementType> res;
-    std::string file = "../data/lns__131.mtx";
+    constexpr size_t TEST_ITERATIONS = 30;  ///< number of testing iteration
 
-    rw_lns__131.readMatrix(file);
-    cw_lns__131.readMatrix(file);
+    Matrix<ElementType, Order::RowWise> rwMatrix; ///< matrix stored RowWise 
+    Matrix<ElementType, Order::ColWise> cwMatrix; ///< matrix stored ColWise
 
-    std::vector<ElementType> v(rw_lns__131.getNCols(),1);
+    std::string file = "../data/lns__131.mtx"; ///< file of matrix stored in Matrix Market (MM) format
 
-    res = rw_lns__131 * v;
+    //read matrices 
+    rwMatrix.readMatrix(file);
+    cwMatrix.readMatrix(file);
 
-    for( size_t i = 0 ; i < res.size(); ++i)
-        std::cout << res[i] <<std::endl;
+    std::vector<ElementType> testVector(rwMatrix.getNCols(),1); ///< 1s vector of the right size to test matrix-vector multiplication
+
+    Timings::Chrono clock; ///< chrono clock to evaluate times
+    double urwTime{0}; ///< UNcompressed RowWise total time
+    double crwTime{0}; ///< compressed RowWise total time
+    double ucwTime{0}; ///< UNcompressed ColWise total time
+    double ccwTime{0}; ///< compressed ColWise total time
     
+    // loop to evaluate elapsed time for the matrix-vector multiplication each combination of state and StorageOrder
+    for(size_t t = 0 ; t < TEST_ITERATIONS ; ++t){
+        clock.start(); rwMatrix * testVector; clock.stop();
+        urwTime+=clock.wallTime();
+        rwMatrix.compress();
+        clock.start(); rwMatrix * testVector; clock.stop();
+        crwTime+=clock.wallTime();
+        rwMatrix.uncompress();
+        clock.start(); cwMatrix * testVector; clock.stop();
+        ucwTime+=clock.wallTime();
+        cwMatrix.compress();
+        clock.start(); cwMatrix * testVector; clock.stop();
+        ccwTime+=clock.wallTime();
+        cwMatrix.uncompress();
+    }
 
-
-    /* TEST
-    algebra::nonZeroElem<int> m_data = {
-        {{0, 0}, 1},
-        {{0, 2}, 5},
-        {{3, 1}, 7},
-        {{2, 1}, 6},
-        {{3, 2}, 2},
-        {{3, 3}, 3},
-        {{4, 0}, 8}
-    };
-
-    algebra::Matrix<int, algebra::StorageOrder::RowWise> m1(5, 4, m_data);
-    
-    algebra::Matrix<int, algebra::StorageOrder::ColWise> m2(5, 4, m_data);  
-
-    std::cout << "Matrix with RowWise storage order:" << std::endl;
-    std::cout << m1 << std::endl;
-    std::cout << "Compress" << std::endl;
-    m1.compress();
-    std::cout << m1 << std::endl;
-    std::cout << "UNcompress" << std::endl;
-    m1.uncompress();
-    std::cout << m1 << std::endl;
-
-    std::cout << "Matrix with ColWise storage order:" << std::endl;
-    std::cout << m2 << std::endl;
-    std::cout << "Compress" << std::endl;
-    m2.compress();
-    std::cout << m2 << std::endl;
-    std::cout << "UNcompress" << std::endl;
-    m2.uncompress();
-    std::cout << m2 << std::endl;
-
-    std::cout << m1 << std::endl;
-    m2.compress();
-    m1(0,1) = 3;
-    std::cout << m1 << std::endl;
-
-    std::cout << "-------" << std::endl;
-    std::cout << m1(0,0) << std::endl;
-    std::cout << m1(0,3) << std::endl;
-    std::cout << m1(2,3) << std::endl;
-    std::cout << "-------" << std::endl;
-    std::cout << "-------" << std::endl;
-    std::cout << m2(0,0) << std::endl;
-    std::cout << m2(0,3) << std::endl;
-    std::cout << m2(3,1) << std::endl;
-    std::cout << "-------" << std::endl;
-
-    
-
-    std::cout << "***********************************" << std::endl;
-    std::vector<int> v(4,1);
-    std::vector<int> res1 = m1*v;
-    for( const auto & x : res1)
-        std::cout << x <<std::endl;
-    std::cout << "*************************************" << std::endl;
-    std::vector<int> res2 = m2*v;
-    for( const auto & x : res2)
-        std::cout << x <<std::endl;
-    m1.compress();
-    m2.compress();
-    std::cout << "CCC***********************************" << std::endl;
-    std::vector<int> resc1 = m1*v;
-    for( const auto & x : resc1)
-        std::cout << x <<std::endl;
-    std::cout << "CCC***********************************" << std::endl;
-    std::vector<int> resc2 = m2*v;
-    for( const auto & x : resc2)
-        std::cout << x <<std::endl;
-    */
+    // print the result
+    printResults(urwTime,crwTime,ucwTime,ccwTime,TEST_ITERATIONS);
     return 0;
+}
+
+void printResults(double urwTime, double crwTime, double ucwTime, double ccwTime, size_t nIt) {
+    std::cout << "Mean elapsed time of matrix-vector product:" << std::endl;
+    std::cout << "UNcompressed RowWise: " << urwTime/nIt << " microseconds" << std::endl;
+    std::cout << "Compressed RowWise: " << crwTime/nIt << " microseconds" << std::endl;
+    double rwGain = ((urwTime - crwTime) / urwTime) * 100;
+    std::cout << "RowWise Compression Gain: " << rwGain << "%" << std::endl;
+    std::cout << "UNcompressed ColWise: " << ucwTime/nIt << " microseconds" << std::endl;
+    std::cout << "Compressed ColWise: " << ccwTime/nIt << " microseconds" << std::endl;
+    double cwGain = ((ucwTime - ccwTime) / ucwTime) * 100;
+    std::cout << "ColWise Compression Gain: " << cwGain << "%" << std::endl; 
 }

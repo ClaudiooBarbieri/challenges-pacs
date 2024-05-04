@@ -9,14 +9,14 @@ EXAMPLES_LIB = ${PACS_ROOT}/lib
 MY_INCLUDE = ../include
 
 # Adding run time search path
-ADDITIONAL_PATH =
+ADDITIONAL_PATH = 
 
 # compiler variables
 
 CXXFLAGS = -std=c++20 -O3 -fPIC
 CPPFLAGS = -DNDEBUG -I${EXAMPLES_INCLUDE} -I${MY_INCLUDE}
-LDFLAGS = -L. -Wl,-rpath=$(ADDITIONAL_PATH) -L${EXAMPLES_LIB}
-LDLIBS = 
+LDFLAGS = -L. -Wl,-rpath=$(EXAMPLES_LIB) -L${EXAMPLES_LIB}
+LDLIBS = -lpacs
 
 # files
 
