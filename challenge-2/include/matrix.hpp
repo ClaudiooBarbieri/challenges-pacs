@@ -13,12 +13,7 @@
 
 namespace algebra{
 
-    template<typename T>
-    using nonZeroElem = std::map<std::array<size_t,2>,T>;
-
-    /** 
-     * @brief enumerator for the order used to store matrix values
-    **/
+    ///  enumerator for the order used to store matrix values
     enum class StorageOrder {RowWise, ColWise};
 
     /// comparator
@@ -41,6 +36,10 @@ namespace algebra{
         }
     };
 
+    /// type to store indexes and values of non zero element of sparse matrix 
+    template<typename T>
+    using nonZeroElem = std::map<std::array<size_t,2>,T>;
+
     /**
      * @brief struct containing indexes and values of matrix in compressed state
     **/
@@ -60,6 +59,15 @@ namespace algebra{
      * @tparam T type of the elements stored in the matrix
      * @tparam Order storage order of the matrix 
     **/
+
+    /// forward declaration of the tempplate class
+    template<typename T, StorageOrder Order>
+    class Matrix;
+
+    /// forward declaration of template friend operator * 
+    //template<typename T, StorageOrder Order>
+    //std::vector<T> operator*(const Matrix<T,Order> & m, const std::vector<T> & v);
+
     template<typename T, StorageOrder Order>
     class Matrix {
     private:
@@ -101,6 +109,26 @@ namespace algebra{
             return -1;
         }
 
+        /// get non zero element value and index of row k
+        nonZeroElem<T> getRow(size_t k) const{
+            if constexpr (Order == StorageOrder::RowWise){
+                return {uData.lower_bound({k,0}),uData.lower_bound({k,cols})};
+            }
+            else{
+                throw std::invalid_argument("Cannot extract row from ColWise storage");
+            }
+        }
+
+        /// get non zero element value and index of column k
+        nonZeroElem<T> getCol(size_t k) const{
+            if constexpr (Order == StorageOrder::ColWise){
+                return {uData.lower_bound({0,k}),uData.lower_bound({rows,k})};
+            }
+            else{
+                throw std::invalid_argument("Cannot extract column from RowWise storage");
+            }
+        }
+
         /// print vectors of the compressed state format
 
         void printCompressedVector() const{
@@ -135,6 +163,16 @@ namespace algebra{
          * @param data map containing indexes and values of the non zero elemenents
         **/
         Matrix(size_t nRows, size_t nCols, const nonZeroElem<T> & data) : rows{nRows},cols{nCols},uData(data.begin(),data.end()),compressed{false} { };
+
+        /// get number of rows
+        size_t getNRows() const{
+            return rows;
+        }
+
+        /// get number of columns
+        size_t getNCols() const{
+            return cols;
+        }
 
         /// read matrix in Matrix Market (MM) format
         void readMatrix(const std::string & fileName){
@@ -182,7 +220,7 @@ namespace algebra{
                 size_t inserted{0}; ///< keep track of the number of non zero elements inserted in the compressed vector
                 cData.innerIdx.emplace_back(inserted); ///< first index is always zero
                 for(size_t k = 0 ; k < rows; ++k){
-                    nonZeroElem<T> row(uData.lower_bound({k,0}),uData.lower_bound({k,cols})); ///< extract the non zero elements of row k
+                    nonZeroElem<T> row = this->getRow(k); ///< extract the non zero elements of row k
                     for(const auto & el : row){
                         cData.outerIdx.emplace_back(el.first[1]); ///< add column index of the value to vector of column index
                         cData.nzElem.emplace_back(el.second); ///< add the value to vector of non zero elements
@@ -199,7 +237,7 @@ namespace algebra{
                 size_t inserted{0}; ///< keep track of the number of non zero elements inserted in the compressed vector
                 cData.innerIdx.emplace_back(inserted); ///< first index is always zero
                 for(size_t k = 0 ; k < cols; ++k){
-                    nonZeroElem<T> col(uData.lower_bound({0,k}),uData.lower_bound({rows,k})); ///< extract the non zero elements of col k
+                    nonZeroElem<T> col = this->getCol(k); ///< extract the non zero elements of col k
                     for(const auto & el : col){
                         cData.outerIdx.emplace_back(el.first[0]); ///< add row index of the value to vector of row index
                         cData.nzElem.emplace_back(el.second); ///< add the value to vector of non zero elements
@@ -307,8 +345,16 @@ namespace algebra{
             }
         }
 
+        /// matrix vector multiplication  for rowwise
+        template<typename U>
+        friend std::vector<U> operator*(const Matrix<U,StorageOrder::RowWise> & matrix, const std::vector<U> & v);
+
+        /// matrix vector multiplication  for colwise
+        template<typename U>
+        friend std::vector<U> operator*(const Matrix<U,StorageOrder::ColWise> & matrix, const std::vector<U> & v);
+
         /// overload stream operator for the matrix
-        friend std::ostream& operator<<(std::ostream& os, const Matrix & matrix) {
+        friend std::ostream& operator<<(std::ostream& os, const Matrix<T,Order> & matrix) {
             if(!matrix.isCompressed()){
                 for (const auto& d : matrix.uData) {
                     os << "( " << d.first[0] << " : " << d.first[1] << " )" << " = " << d.second << std::endl; ///< print (row,col) index and value in the stored order
@@ -321,6 +367,58 @@ namespace algebra{
             return os;
         }
     };
+
+    /// specialization of the matrix vector operator for row storage
+    template<typename T>
+    std::vector<T> operator*(const Matrix<T,StorageOrder::RowWise> & matrix, const std::vector<T> & v) {
+        size_t nCols = matrix.getNCols();
+        if(nCols != v.size())
+            throw std::invalid_argument("No matching dimensions"); ///< error if the number of columns of the matrix does not match with row of the vector
+        size_t nRows = matrix.getNRows();
+        std::vector<T> res(nRows,0); ///< set zero vector of the right dimension
+        if(matrix.isCompressed()){
+            for(size_t i = 0 ; i < matrix.getNRows(); ++i){
+                for(size_t k = matrix.cData.innerIdx[i] ; k < matrix.cData.innerIdx[i+1]; ++k){ ///< loop over non zero element of row i
+                    res[i] += matrix.cData.nzElem[k]*v[matrix.cData.outerIdx[k]]; ///< non zero element of row i multiplied to row j of the vector according to its position and addedd to its membersgip row
+                }
+            }
+        }
+        else{
+            for(size_t i = 0 ; i < nRows ; ++i){
+                nonZeroElem<T> row = matrix.getRow(i); ///< extract row i
+                for(const auto & el : row){
+                    res[i] += el.second*v[el.first[1]]; ///< product of non zero element with its corresponding value in the vector and sum to the resulting row
+                }
+            }
+        }
+        return res;
+    }
+
+    /// specialization of the matrix vector operator for column storage
+    template<typename T>
+    std::vector<T> operator*(const Matrix<T,StorageOrder::ColWise> & matrix, const std::vector<T> & v) {
+        size_t nCols = matrix.getNCols();
+        if(nCols != v.size())
+            throw std::invalid_argument("No matching dimensions"); ///< error if the number of columns of the matrix does not match with row of the vector
+        size_t nRows = matrix.getNRows();
+        std::vector<T> res(nRows,0); ///< set zero vector of the right dimension
+        if(matrix.isCompressed()){
+            for(size_t j = 0 ; j < matrix.getNCols(); ++j){
+                for(size_t k = matrix.cData.innerIdx[j] ; k < matrix.cData.innerIdx[j+1]; ++k){ ///< loop over non zero element of column j
+                    res[matrix.cData.outerIdx[k]] += matrix.cData.nzElem[k]*v[j]; ///< non zero element of column j multiplied by element at row j of the vector and addede to corresponding membership row of the result 
+                }
+            }
+        }
+        else{
+            for(size_t j = 0 ; j < nCols ; ++j){
+                nonZeroElem<T> col = matrix.getCol(j); ///< extract column j
+                for(const auto & el : col){
+                    res[el.first[0]] += el.second*v[el.first[1]]; ///< product of non zero element with its corresponding value in the vector and sum to the resulting row
+                }
+            }
+        }
+        return res;
+    }
 }
 
 #endif
