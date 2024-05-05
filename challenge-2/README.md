@@ -1,4 +1,4 @@
-# Sparse Matrix class template
+# Sparse Matrix Class Template
 
 This is a C++ class template for handling sparse matrices. It provides functionalities for matrix-vector multiplication, matrix compression, decompression, reading matrices from Matrix Market format files, and more.
 
