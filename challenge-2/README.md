@@ -1,4 +1,4 @@
-# Sparse Matrix Library
+# Sparse Matrix class template
 
 This is a C++ library for handling sparse matrices. It provides functionalities for matrix-vector multiplication, matrix compression, decompression, reading matrices from Matrix Market format files, and more.
 
