@@ -1,6 +1,6 @@
 # Sparse Matrix class template
 
-This is a C++ library for handling sparse matrices. It provides functionalities for matrix-vector multiplication, matrix compression, decompression, reading matrices from Matrix Market format files, and more.
+This is a C++ class template for handling sparse matrices. It provides functionalities for matrix-vector multiplication, matrix compression, decompression, reading matrices from Matrix Market format files, and more.
 
 ## Usage
 
@@ -9,13 +9,14 @@ To use this library, include the `matrix.hpp` header file in your C++ project an
 ```cpp
 #include "matrix.hpp"
 
-using ElementType = double;
-using Order = algebra::StorageOrder;
-using Matrix = algebra::Matrix<ElementType, Order>;
+using ElementType = {typeofelement};
+using Order = algebra::StorageOrder; 
+template<typename T, Order O>
+using Matrix = algebra::Matrix<T,O>; 
 
 int main() {
-    // Create a matrix
-    Matrix matrix;
+    // Create a matrix and choose the StorageOrder
+    Matrix<ElementType, StorageOrder::{RowWise/ColWise}> matrix;
 
     // Read matrix from file
     matrix.readMatrix("matrix.mtx");
@@ -27,7 +28,7 @@ int main() {
 ## Features
 
 - **Matrix creation**: Create sparse matrices either by providing non-zero elements directly or by reading from Matrix Market format files.
-- **Compression**: Compress matrices to optimize memory usage.
+- **Compression**: Compress matrices in CSR CSC format to optimize memory usage
 - **Decompression**: Decompress matrices to access individual elements efficiently.
 - **Matrix-vector multiplication**: Multiply matrices with vectors efficiently.
 - **Storage order**: Choose between row-wise or column-wise storage order for matrices.
@@ -37,13 +38,14 @@ int main() {
 ```cpp
 #include "matrix.hpp"
 
-using ElementType = double;
+using ElementType = double; 
 using Order = algebra::StorageOrder;
-using Matrix = algebra::Matrix<ElementType, Order>;
+template<typename T, Order O>
+using Matrix = algebra::Matrix<T,O>; 
 
 int main() {
     // Create a row-wise matrix
-    Matrix matrix(3, 3, {
+    Matrix<ElementType, Order::RowWise matrix(3, 3, {
         {{0, 1}, 3.0},
         {{1, 0}, 2.0},
         {{2, 2}, 1.0}
@@ -67,7 +69,7 @@ int main() {
 ```
 ## Testing
 
-The main function of this library includes a testing routine to evaluate the performance of matrix-vector multiplication for different combinations of storage order and matrix state (compressed or uncompressed). Here's a brief description of the testing process:
+The main function is made for testing routine to evaluate the performance of matrix-vector multiplication for different combinations of storage order and matrix state (compressed or uncompressed). Here's a brief description of the testing process:
 
 1. **Initialization**: Initialize sparse matrices by reading them from Matrix Market format files. Two matrices are created, one stored in row-wise order and the other in column-wise order.
 
@@ -78,7 +80,3 @@ The main function of this library includes a testing routine to evaluate the per
 This testing routine helps assess the efficiency and effectiveness of matrix compression in terms of computational performance.
 
 
-
-## License
-
-This library is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
