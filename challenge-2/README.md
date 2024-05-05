@@ -5,7 +5,7 @@ This is a C++ class template for handling sparse matrices. It provides functiona
 ## Features
 
 - **Matrix creation**: Create sparse matrices either by providing non-zero elements directly or by reading from Matrix Market format files.
-- **Compression**: Compress matrices in CSR CSC format to optimize memory usage
+- **Compression**: Compress matrices in CSR CSC format to optimize operation and memory usage
 - **Decompression**: Decompress matrices to access individual elements efficiently.
 - **Matrix-vector multiplication**: Multiply matrices with vectors efficiently.
 - **Storage order**: Choose between row-wise or column-wise storage order for matrices.
