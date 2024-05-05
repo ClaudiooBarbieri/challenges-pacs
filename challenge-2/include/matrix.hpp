@@ -45,8 +45,8 @@ namespace algebra{
     **/
     template<typename T>
     struct CompressedData{
-        std::vector<size_t> innerIdx;
-        std::vector<size_t> outerIdx;
+        std::vector<size_t> beginIdx;
+        std::vector<size_t> elemIdx;
         std::vector<T> nzElem;
     };
 
@@ -95,14 +95,14 @@ namespace algebra{
         **/
         int getIndex(size_t i, size_t j) const {
             if constexpr(Order == StorageOrder::RowWise){
-                for(size_t r = cData.innerIdx[i] ; r < cData.innerIdx[i+1]; r++){ ///< loop over element of row i
-                    if(cData.outerIdx[r] == j) ///< check if the column index correspond to the given one j
+                for(size_t r = cData.beginIdx[i] ; r < cData.beginIdx[i+1]; r++){ ///< loop over element of row i
+                    if(cData.elemIdx[r] == j) ///< check if the column index correspond to the given one j
                         return r; ///< return index of non zero value in non zero element vector
                     }
             }
             else if constexpr(Order == StorageOrder::ColWise){
-                for(size_t r = cData.innerIdx[j] ; r < cData.innerIdx[j+1]; r++){ ///< loop over element of col j
-                    if(cData.outerIdx[r] == i) ///< check if the column index correspond to the given one i
+                for(size_t r = cData.beginIdx[j] ; r < cData.beginIdx[j+1]; r++){ ///< loop over element of col j
+                    if(cData.elemIdx[r] == i) ///< check if the column index correspond to the given one i
                         return r; ///< return index of non zero value in non zero element vector
                     }
                 }
@@ -139,13 +139,13 @@ namespace algebra{
             std::cout << std::endl;
             
             std::cout << "Outer : "; ///< corresponding row/column index of the value
-            for(size_t k = 0 ; k < cData.outerIdx.size() ; ++k){
-                std::cout << cData.outerIdx[k] << "   ";
+            for(size_t k = 0 ; k < cData.elemIdx.size() ; ++k){
+                std::cout << cData.elemIdx[k] << "   ";
             }
             std::cout << std::endl;
             std::cout << "Inner : "; ///< starting corresponding index
-            for(size_t k = 0 ; k < cData.innerIdx.size() ; ++k){
-                std::cout << cData.innerIdx[k] << "   ";
+            for(size_t k = 0 ; k < cData.beginIdx.size() ; ++k){
+                std::cout << cData.beginIdx[k] << "   ";
             }
             std::cout << std::endl;
             std::cout << std::endl;
@@ -215,35 +215,35 @@ namespace algebra{
             if constexpr(Order == StorageOrder::RowWise){
                 // reserve the space necessary for the vector of compressed state representation
                 cData.nzElem.reserve(uData.size());
-                cData.outerIdx.reserve(uData.size());
-                cData.innerIdx.reserve(rows + 1);
+                cData.elemIdx.reserve(uData.size());
+                cData.beginIdx.reserve(rows + 1);
                 size_t inserted{0}; ///< keep track of the number of non zero elements inserted in the compressed vector
-                cData.innerIdx.emplace_back(inserted); ///< first index is always zero
+                cData.beginIdx.emplace_back(inserted); ///< first index is always zero
                 for(size_t k = 0 ; k < rows; ++k){
                     nonZeroElem<T> row = this->getRow(k); ///< extract the non zero elements of row k
                     for(const auto & el : row){
-                        cData.outerIdx.emplace_back(el.first[1]); ///< add column index of the value to vector of column index
+                        cData.elemIdx.emplace_back(el.first[1]); ///< add column index of the value to vector of column index
                         cData.nzElem.emplace_back(el.second); ///< add the value to vector of non zero elements
                     }
                     inserted+= row.size(); ///< update the number of inserted values
-                    cData.innerIdx.emplace_back(inserted); ///< add index to vector of rows index
+                    cData.beginIdx.emplace_back(inserted); ///< add index to vector of rows index
                 }
             }
             else if constexpr (Order == StorageOrder::ColWise){
                 // reserve the space necessary for the vector of compressed state representation
                 cData.nzElem.reserve(uData.size());
-                cData.outerIdx.reserve(uData.size());
-                cData.innerIdx.reserve(cols + 1);
+                cData.elemIdx.reserve(uData.size());
+                cData.beginIdx.reserve(cols + 1);
                 size_t inserted{0}; ///< keep track of the number of non zero elements inserted in the compressed vector
-                cData.innerIdx.emplace_back(inserted); ///< first index is always zero
+                cData.beginIdx.emplace_back(inserted); ///< first index is always zero
                 for(size_t k = 0 ; k < cols; ++k){
                     nonZeroElem<T> col = this->getCol(k); ///< extract the non zero elements of col k
                     for(const auto & el : col){
-                        cData.outerIdx.emplace_back(el.first[0]); ///< add row index of the value to vector of row index
+                        cData.elemIdx.emplace_back(el.first[0]); ///< add row index of the value to vector of row index
                         cData.nzElem.emplace_back(el.second); ///< add the value to vector of non zero elements
                     }
                     inserted+= col.size(); ///< update the number of inserted values
-                    cData.innerIdx.emplace_back(inserted); ///< add index to vector of column index
+                    cData.beginIdx.emplace_back(inserted); ///< add index to vector of column index
                 }
             }
             uData.clear();
@@ -262,8 +262,8 @@ namespace algebra{
             if constexpr(Order == StorageOrder::RowWise){
                 size_t k = 0; ///< index of the non zero element value to insert
                 for(size_t i = 0 ; i < rows ; ++i){ ///< loop over rows
-                    for(size_t j = 0 ; j < cData.innerIdx[i+1]-cData.innerIdx[i];++j){ ///<loop over number of elements of row k has to be inserted
-                        uData.insert({{i,cData.outerIdx[k]},cData.nzElem[k]}); ///< row index from outer loop,column index and value at index k of the corrisponding vector 
+                    for(size_t j = 0 ; j < cData.beginIdx[i+1]-cData.beginIdx[i];++j){ ///<loop over number of elements of row k has to be inserted
+                        uData.insert({{i,cData.elemIdx[k]},cData.nzElem[k]}); ///< row index from outer loop,column index and value at index k of the corrisponding vector 
                         ++k;
                     }
                 }
@@ -271,15 +271,15 @@ namespace algebra{
             else if constexpr (Order == StorageOrder::ColWise){
                 size_t k = 0; ///< index of the non zero element value to insert
                 for(size_t j = 0 ; j < cols ; ++j){ ///< loop over columns
-                    for(size_t i = 0 ; i < cData.innerIdx[j+1]-cData.innerIdx[j];++i){ ///<loop over number of elements of column k has to be inserted
-                        uData.insert({{cData.outerIdx[k],j},cData.nzElem[k]}); ///< column index from outer loop,row index and value at index k of the corrisponding vector 
+                    for(size_t i = 0 ; i < cData.beginIdx[j+1]-cData.beginIdx[j];++i){ ///<loop over number of elements of column k has to be inserted
+                        uData.insert({{cData.elemIdx[k],j},cData.nzElem[k]}); ///< column index from outer loop,row index and value at index k of the corrisponding vector 
                         ++k;
                     }
                 }
             }
             cData.nzElem.clear();
-            cData.outerIdx.clear();
-            cData.innerIdx.clear();
+            cData.elemIdx.clear();
+            cData.beginIdx.clear();
             compressed=false;
         }
 
@@ -378,8 +378,8 @@ namespace algebra{
         std::vector<T> res(nRows,0); ///< set zero vector of the right dimension
         if(matrix.isCompressed()){
             for(size_t i = 0 ; i < matrix.getNRows(); ++i){
-                for(size_t k = matrix.cData.innerIdx[i] ; k < matrix.cData.innerIdx[i+1]; ++k){ ///< loop over non zero element of row i
-                    res[i] += matrix.cData.nzElem[k]*v[matrix.cData.outerIdx[k]]; ///< non zero element of row i multiplied to row j of the vector according to its position and addedd to its membersgip row
+                for(size_t k = matrix.cData.beginIdx[i] ; k < matrix.cData.beginIdx[i+1]; ++k){ ///< loop over non zero element of row i
+                    res[i] += matrix.cData.nzElem[k]*v[matrix.cData.elemIdx[k]]; ///< non zero element of row i multiplied to row j of the vector according to its position and addedd to its membersgip row
                 }
             }
         }
@@ -404,8 +404,8 @@ namespace algebra{
         std::vector<T> res(nRows,0); ///< set zero vector of the right dimension
         if(matrix.isCompressed()){
             for(size_t j = 0 ; j < matrix.getNCols(); ++j){
-                for(size_t k = matrix.cData.innerIdx[j] ; k < matrix.cData.innerIdx[j+1]; ++k){ ///< loop over non zero element of column j
-                    res[matrix.cData.outerIdx[k]] += matrix.cData.nzElem[k]*v[j]; ///< non zero element of column j multiplied by element at row j of the vector and addede to corresponding membership row of the result 
+                for(size_t k = matrix.cData.beginIdx[j] ; k < matrix.cData.beginIdx[j+1]; ++k){ ///< loop over non zero element of column j
+                    res[matrix.cData.elemIdx[k]] += matrix.cData.nzElem[k]*v[j]; ///< non zero element of column j multiplied by element at row j of the vector and addede to corresponding membership row of the result 
                 }
             }
         }

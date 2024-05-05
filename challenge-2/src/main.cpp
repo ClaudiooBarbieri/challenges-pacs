@@ -8,7 +8,12 @@ template<typename T, Order O>
 using Matrix = algebra::Matrix<T,O>; 
 
 /**
- * @brief Prints the results of matrix-vector multiplication tests for each combination of StorageOrder and state of the matrix, compute also the %gain
+ * @brief prints the results of matrix-vector multiplication tests for each combination of StorageOrder and state of the matrix, compute also the %gain
+ * @param urwTime UNcompressed RowWise time 
+ * @param crwTime compressed RowWise time
+ * @param ucwTime UNcompressed ColWise time
+ * @param ccwTime compressed ColWise time
+ * @param nIt number of itereation made in the time calculation
  */
 void printResults(double urwTime, double crwTime, double ucwTime, double ccwTime, size_t nIt);
 
