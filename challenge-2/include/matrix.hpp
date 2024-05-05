@@ -13,14 +13,17 @@
 
 namespace algebra{
 
-    ///  enumerator for the order used to store matrix values
+    ///  enumerator for the order used to store the matrix 
     enum class StorageOrder {RowWise, ColWise};
 
-    /// comparator
+    /// comparator to manage the storage in the correct order
     template <StorageOrder Order>
     struct Comparator {};
 
-    /// array comparison for storage by row , lexicographic wrt row,column 
+    /**
+     * @brief comparator for row wise storage
+     * @note lexicographic wrt row-column
+    */
     template <>
     struct Comparator<StorageOrder::RowWise> {
         bool operator()(const std::array<size_t, 2>& lhs, const std::array<size_t, 2>& rhs) const {
@@ -28,7 +31,10 @@ namespace algebra{
         }
     };
 
-    /// array comparison for storage by column, lexicographic wrt column,row 
+    /**
+     * @brief comparator for column wise storage
+     * @note lexicographic wrt column-row
+    */ 
     template <>
     struct Comparator<StorageOrder::ColWise> {
         bool operator()(const std::array<size_t, 2>& lhs, const std::array<size_t, 2>& rhs) const {
@@ -36,18 +42,18 @@ namespace algebra{
         }
     };
 
-    /// type to store indexes and values of non zero element of sparse matrix 
+    /// store indexes and values of non zero element of sparse matrix 
     template<typename T>
     using nonZeroElem = std::map<std::array<size_t,2>,T>;
 
     /**
-     * @brief struct containing indexes and values of matrix in compressed state
-    **/
+     * @brief struct containing the vectors used for compressed storage
+    */
     template<typename T>
     struct CompressedData{
-        std::vector<size_t> beginIdx;
-        std::vector<size_t> elemIdx;
-        std::vector<T> nzElem;
+        std::vector<T> nzElem; ///< values of the non zero elements
+        std::vector<size_t> elemIdx; ///< column(CSR) row(CSC) indexes of the non zero elements
+        std::vector<size_t> beginIdx; ///< indexes of start of the row(CSR) column(CSC) in previous vectors
     };
 
     /// type of storage for uncompressed matrix
@@ -58,41 +64,22 @@ namespace algebra{
      * @brief dynamic class template for sparse matrix 
      * @tparam T type of the elements stored in the matrix
      * @tparam Order storage order of the matrix 
-    **/
-
-    /// forward declaration of the tempplate class
-    template<typename T, StorageOrder Order>
-    class Matrix;
-
-    /// forward declaration of template friend operator * 
-    //template<typename T, StorageOrder Order>
-    //std::vector<T> operator*(const Matrix<T,Order> & m, const std::vector<T> & v);
-
+    */
     template<typename T, StorageOrder Order>
     class Matrix {
     private:
-        /// matrix dimensions
-        size_t rows{0};
-        size_t cols{0};
+        size_t rows{0}; ///< number of rows
+        size_t cols{0}; ///< number of columns
+        bool compressed{false}; ///< flag of the compressed state
+        UncompressedData<T,Order> uData; ///< storage for the uncompressed state
+        CompressedData<T> cData; ///< storage for compressed state
 
-        /// state of the matrix
-        bool compressed{false};
-
-        /// storage of non zero elements in uncompressed state
-        UncompressedData<T,Order> uData;
-
-        /// storage of non zero elements in compressed state
-        CompressedData<T> cData;
-
-        /// check if index is coherent with matrix sizes
+        /// check if the index is coherent with matrix sizes
         bool indexInBound(size_t i,size_t j) const {
             return i<rows && j<cols;
         }
 
-        /**
-         * @brief corresponding index in non zero value vector of compressed storage
-         * @return index or -1 if correspond to zero value element
-        **/
+        /// get the index in the vector of non zero element in position (i,j)
         int getIndex(size_t i, size_t j) const {
             if constexpr(Order == StorageOrder::RowWise){
                 for(size_t r = cData.beginIdx[i] ; r < cData.beginIdx[i+1]; r++){ ///< loop over element of row i
@@ -101,15 +88,16 @@ namespace algebra{
                     }
             }
             else if constexpr(Order == StorageOrder::ColWise){
-                for(size_t r = cData.beginIdx[j] ; r < cData.beginIdx[j+1]; r++){ ///< loop over element of col j
+                for(size_t r = cData.beginIdx[j] ; r < cData.beginIdx[j+1]; r++){ ///< loop over element of column j
                     if(cData.elemIdx[r] == i) ///< check if the column index correspond to the given one i
                         return r; ///< return index of non zero value in non zero element vector
                     }
                 }
+            std::cerr << "Zero element in given position" << std::endl;
             return -1;
         }
 
-        /// get non zero element value and index of row k
+        /// get row k, indexes and values of non zero elements
         nonZeroElem<T> getRow(size_t k) const{
             if constexpr (Order == StorageOrder::RowWise){
                 return {uData.lower_bound({k,0}),uData.lower_bound({k,cols})};
@@ -119,7 +107,7 @@ namespace algebra{
             }
         }
 
-        /// get non zero element value and index of column k
+        /// get column k, indexes and values of non zero elements
         nonZeroElem<T> getCol(size_t k) const{
             if constexpr (Order == StorageOrder::ColWise){
                 return {uData.lower_bound({0,k}),uData.lower_bound({rows,k})};
@@ -129,21 +117,19 @@ namespace algebra{
             }
         }
 
-        /// print vectors of the compressed state format
-
+        /// print vectors used for compressed state format storage
         void printCompressedVector() const{
             std::cout << "NZ :    "; ///< value of non zero element
             for(size_t k = 0 ; k < cData.nzElem.size() ; ++k){
                 std::cout << cData.nzElem[k] << "   "; 
             }
             std::cout << std::endl;
-            
-            std::cout << "Outer : "; ///< corresponding row/column index of the value
+            std::cout << "Outer : "; ///< column(CSR) row(CSC) index of the element
             for(size_t k = 0 ; k < cData.elemIdx.size() ; ++k){
                 std::cout << cData.elemIdx[k] << "   ";
             }
             std::cout << std::endl;
-            std::cout << "Inner : "; ///< starting corresponding index
+            std::cout << "Inner : "; ///< starting row(CSR) column(CSC) index
             for(size_t k = 0 ; k < cData.beginIdx.size() ; ++k){
                 std::cout << cData.beginIdx[k] << "   ";
             }
@@ -152,27 +138,26 @@ namespace algebra{
         }
     public:
 
-        /// deafualt constructor
+        /// default constructor
         Matrix() = default;
 
         /**
-         * @brief constructor of the matrix in uncompressed state
+         * @brief constructor in uncompressed state
          * @note assume coherent values for the number of rows and columns
-         * @param nrows number of rows of the matrix
-         * @param ncols number of columns of the matrix
-         * @param data map containing indexes and values of the non zero elemenents
-        **/
+         * @param nrows number of rows 
+         * @param ncols number of columns
+         * @param data indexes and values of the non zero elemenents stored in a nonZeroElem type variable
+        */
         Matrix(size_t nRows, size_t nCols, const nonZeroElem<T> & data) : rows{nRows},cols{nCols},uData(data.begin(),data.end()),compressed{false} { };
 
         /// get number of rows
-        size_t getNRows() const{
-            return rows;
-        }
+        size_t getNRows() const { return rows; }
 
         /// get number of columns
-        size_t getNCols() const{
-            return cols;
-        }
+        size_t getNCols() const { return cols; }
+
+        /// check the state of the matrix
+        bool isCompressed() const { return compressed; }
 
         /// read matrix in Matrix Market (MM) format
         void readMatrix(const std::string & fileName){
@@ -182,20 +167,21 @@ namespace algebra{
                 return;
             }
             std::string line;
+            // skip comment and read dimension information
             while (std::getline(ifs, line)) {
                 if (line[0] == '%') ///< skip comments
                     continue; 
                 std::istringstream iss(line);
                 // set dimensions
                 size_t nRows, nCols, nNonZeros;
-                iss >> nRows >> nCols >> nNonZeros; ///< read number of rows, columns and non zero elements
+                iss >> nRows >> nCols >> nNonZeros; ///< read number of rows, columns and number of non zero elements
                 rows = nRows;
                 cols = nCols;
                 break;
             }
+            // read values and indexes of non zero element
             while (std::getline(ifs, line)) {
                 std::istringstream iss(line);
-                // set values
                 size_t i,j;
                 T val;
                 iss >> i >> j >> val; ///< read row,column index and corresponding value
@@ -213,45 +199,45 @@ namespace algebra{
                 return;
             }
             if constexpr(Order == StorageOrder::RowWise){
-                // reserve the space necessary for the vector of compressed state representation
+                // reserve the space necessary for the vector of compressed state
                 cData.nzElem.reserve(uData.size());
                 cData.elemIdx.reserve(uData.size());
                 cData.beginIdx.reserve(rows + 1);
                 size_t inserted{0}; ///< keep track of the number of non zero elements inserted in the compressed vector
                 cData.beginIdx.emplace_back(inserted); ///< first index is always zero
                 for(size_t k = 0 ; k < rows; ++k){
-                    nonZeroElem<T> row = this->getRow(k); ///< extract the non zero elements of row k
+                    nonZeroElem<T> row = this->getRow(k); ///< extract the non zero elements in row k
                     for(const auto & el : row){
                         cData.elemIdx.emplace_back(el.first[1]); ///< add column index of the value to vector of column index
                         cData.nzElem.emplace_back(el.second); ///< add the value to vector of non zero elements
                     }
                     inserted+= row.size(); ///< update the number of inserted values
-                    cData.beginIdx.emplace_back(inserted); ///< add index to vector of rows index
+                    cData.beginIdx.emplace_back(inserted); ///< add starting index of the row k+1
                 }
             }
             else if constexpr (Order == StorageOrder::ColWise){
-                // reserve the space necessary for the vector of compressed state representation
+                // reserve the space necessary for the vector of compressed state
                 cData.nzElem.reserve(uData.size());
                 cData.elemIdx.reserve(uData.size());
                 cData.beginIdx.reserve(cols + 1);
                 size_t inserted{0}; ///< keep track of the number of non zero elements inserted in the compressed vector
                 cData.beginIdx.emplace_back(inserted); ///< first index is always zero
                 for(size_t k = 0 ; k < cols; ++k){
-                    nonZeroElem<T> col = this->getCol(k); ///< extract the non zero elements of col k
+                    nonZeroElem<T> col = this->getCol(k); ///< extract the non zero elements in col k
                     for(const auto & el : col){
                         cData.elemIdx.emplace_back(el.first[0]); ///< add row index of the value to vector of row index
                         cData.nzElem.emplace_back(el.second); ///< add the value to vector of non zero elements
                     }
                     inserted+= col.size(); ///< update the number of inserted values
-                    cData.beginIdx.emplace_back(inserted); ///< add index to vector of column index
+                    cData.beginIdx.emplace_back(inserted); ///< add starting index of the column k+1
                 }
             }
-            uData.clear();
-            compressed=true;
+            uData.clear(); ///< clear memory used in uncompressed state
+            compressed=true; ///< set flag of compressed state
         }
 
         /**
-         * @brief uncompress the matrix in the uncompressed form of its StorageOrder
+         * @brief uncompress the matrix in the corresponding form of its StorageOrder
          * @note empty the vectors used by compressed form
         */
         void uncompress(){
@@ -263,8 +249,8 @@ namespace algebra{
                 size_t k = 0; ///< index of the non zero element value to insert
                 for(size_t i = 0 ; i < rows ; ++i){ ///< loop over rows
                     for(size_t j = 0 ; j < cData.beginIdx[i+1]-cData.beginIdx[i];++j){ ///<loop over number of elements of row k has to be inserted
-                        uData.insert({{i,cData.elemIdx[k]},cData.nzElem[k]}); ///< row index from outer loop,column index and value at index k of the corrisponding vector 
-                        ++k;
+                        uData.insert({{i,cData.elemIdx[k]},cData.nzElem[k]}); ///< row index from outer loop,column index and value at index k
+                        ++k; ///< got to next element to add
                     }
                 }
             }
@@ -272,24 +258,25 @@ namespace algebra{
                 size_t k = 0; ///< index of the non zero element value to insert
                 for(size_t j = 0 ; j < cols ; ++j){ ///< loop over columns
                     for(size_t i = 0 ; i < cData.beginIdx[j+1]-cData.beginIdx[j];++i){ ///<loop over number of elements of column k has to be inserted
-                        uData.insert({{cData.elemIdx[k],j},cData.nzElem[k]}); ///< column index from outer loop,row index and value at index k of the corrisponding vector 
-                        ++k;
+                        uData.insert({{cData.elemIdx[k],j},cData.nzElem[k]}); ///< column index from outer loop,row index and value at index k
+                        ++k; ///< got to next element to add
                     }
                 }
             }
+            // clear memory used in compressed state 
             cData.nzElem.clear();
             cData.elemIdx.clear();
             cData.beginIdx.clear();
-            compressed=false;
+            compressed=false; ///< unset flag of compressed state 
         }
 
         /**
-         * @brief non const call operator add or change value of element at index i,j
-         * @note if uncompressed can change and add, if compressed just change existing
-        **/
+         * @brief add or change value of element at index i,j
+         * @note if compressed can only change an existing non zero element
+        */
         T& operator()(size_t i, size_t j){
             if(!this->indexInBound(i,j)){
-                throw std::out_of_range("Indices are out of bounds"); ///< throw exception, not valid index
+                throw std::out_of_range("Indices are out of bounds"); ///< not valid index
             }
             if(this->isCompressed()){
                 int idx = this->getIndex(i,j); ///< get index of possible non zero value element
@@ -307,9 +294,9 @@ namespace algebra{
 
 
         /**
-         * @brief const call operator, give the value at index i,j
+         * @brief examine the value at index i,j
          * @note if out of bound throw an exception
-        **/
+        */
         const T operator()(size_t i, size_t j) const{
             if(this->indexInBound(i,j)){
                 if(this->isCompressed()){
@@ -318,27 +305,26 @@ namespace algebra{
                 }
                 else{
                     const auto it = uData.find({i,j}); ///< iterator to element of index (i,j) if exists
-                    return it!=uData.end() ? it->second : 0; ///< if the iteretor is not the end return the corrisponding value of the non zero element otherwise zero
+                    return it!=uData.end() ? it->second : 0; ///< end iterator indicates a zero value (not stored)
                 }
             }
             else{
-                throw std::out_of_range("Indices are out of bounds"); ///< throw exception, not valid index
+                throw std::out_of_range("Indices are out of bounds"); ///< not valid index
             }
         }
 
-
-        /// check the state of the matrix
-        bool isCompressed() const { return compressed; }
-
-        /// resize the dimension of the matrix (only possible to enlarge it)
+        /**
+         * @brief resize the dimension of the matrix 
+         * @note only possible to enlarge it
+        */
         void resize(size_t nRows, size_t nCols){
             if(this->isCompressed()){
                 std::cerr << "Cannot resize while in compressed state!" << std::endl;
                 return;
             }
             if(nRows>= rows && nCols>=cols){
-                rows = nRows;
-                cols = nCols;
+                rows = nRows; ///< update row size
+                cols = nCols; ///< update column size
             }
             else{
                 std::cerr << "Cannot shrink the matrix!" << std::endl;
@@ -353,7 +339,7 @@ namespace algebra{
         template<typename U>
         friend std::vector<U> operator*(const Matrix<U,StorageOrder::ColWise> & matrix, const std::vector<U> & v) ;
 
-        /// overload stream operator for the matrix
+        /// print the matrix according to its StorageOrder
         friend std::ostream& operator<<(std::ostream& os, const Matrix<T,Order> & matrix) {
             if(!matrix.isCompressed()){
                 for (const auto& d : matrix.uData) {
@@ -362,24 +348,27 @@ namespace algebra{
             }
             else{
                 std::cout << "Print Compressed" << std::endl;
-                matrix.printCompressedVector();
+                matrix.printCompressedVector(); ///< print the vector used for compressed state
             }
             return os;
         }
     };
 
-    /// specialization of the matrix vector operator for row storage
+    /**
+     * @brief matrix-vector multiplication 
+     * @note RowWise partial specialization
+    */
     template<typename T>
     std::vector<T> operator*(const Matrix<T,StorageOrder::RowWise> & matrix, const std::vector<T> & v) {
         size_t nCols = matrix.getNCols();
         if(nCols != v.size())
-            throw std::invalid_argument("No matching dimensions"); ///< error if the number of columns of the matrix does not match with row of the vector
-        size_t nRows = matrix.getNRows();
+            throw std::invalid_argument("No matching dimensions between matrix and vector"); ///< if number of matrix column different from the vector(column) size
+        size_t nRows = matrix.getNRows(); ///< get resulting vector size
         std::vector<T> res(nRows,0); ///< set zero vector of the right dimension
         if(matrix.isCompressed()){
             for(size_t i = 0 ; i < matrix.getNRows(); ++i){
                 for(size_t k = matrix.cData.beginIdx[i] ; k < matrix.cData.beginIdx[i+1]; ++k){ ///< loop over non zero element of row i
-                    res[i] += matrix.cData.nzElem[k]*v[matrix.cData.elemIdx[k]]; ///< non zero element of row i multiplied to row j of the vector according to its position and addedd to its membersgip row
+                    res[i] += matrix.cData.nzElem[k]*v[matrix.cData.elemIdx[k]]; ///< kth non zero element multiplied with the element of its same column index in the vector and add to row in the resulting vector
                 }
             }
         }
@@ -394,18 +383,21 @@ namespace algebra{
         return res;
     }
 
-    /// specialization of the matrix vector operator for column storage
+    /**
+     * @brief matrix-vector multiplication 
+     * @note ColWise partial specialization
+    */
     template<typename T>
     std::vector<T> operator*(const Matrix<T,StorageOrder::ColWise> & matrix, const std::vector<T> & v) {
         size_t nCols = matrix.getNCols();
         if(nCols != v.size())
-            throw std::invalid_argument("No matching dimensions"); ///< error if the number of columns of the matrix does not match with row of the vector
-        size_t nRows = matrix.getNRows();
+            throw std::invalid_argument("No matching dimensions");///< if number of matrix column different from the vector(column) size
+        size_t nRows = matrix.getNRows(); ///< get resulting vector size 
         std::vector<T> res(nRows,0); ///< set zero vector of the right dimension
         if(matrix.isCompressed()){
             for(size_t j = 0 ; j < matrix.getNCols(); ++j){
                 for(size_t k = matrix.cData.beginIdx[j] ; k < matrix.cData.beginIdx[j+1]; ++k){ ///< loop over non zero element of column j
-                    res[matrix.cData.elemIdx[k]] += matrix.cData.nzElem[k]*v[j]; ///< non zero element of column j multiplied by element at row j of the vector and addede to corresponding membership row of the result 
+                    res[matrix.cData.elemIdx[k]] += matrix.cData.nzElem[k]*v[j]; ///< each non zero element of column j multiplied by jth row of the vector and added to its corresponding row index in the resulting vector
                 }
             }
         }
