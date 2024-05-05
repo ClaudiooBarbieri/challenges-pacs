@@ -1,58 +1,71 @@
-# Gradient Descent Implementation
+# Sparse Matrix Library
 
-This repository contains an implementation of the gradient descent optimization algorithm given as challenge for the PACS course 2023/24.
+This is a C++ library for handling sparse matrices. It provides functionalities for matrix-vector multiplication, matrix compression, decompression, reading matrices from Matrix Market format files, and more.
 
-## Overview
+## Usage
 
-Gradient descent is an iterative optimization algorithm used to minimize some function by iteratively moving in the direction of steepest descent as defined by the negative of the gradient. More detail about the requests in the doc folder
+To use this library, include the `matrix.hpp` header file in your C++ project and instantiate the `Matrix` class with the desired element type (`T`) and storage order (`Order`). Here's an example:
 
-## Implementation Details
+```cpp
+#include "matrix.hpp"
 
-The gradient descent algorithm implemented in this repository is designed to minimize a given objective function. The objective function and its gradient are provided in a C++ file named `functions.cpp`, and the initial parameters are specified in a JSON file named `parameters.json` and stored in `Struct Parameters` defined in `parameters.hpp` . Additionally, the optimization algorithm according to the selected strategy is implemented in `gradientMethod.cpp`.
+using ElementType = double;
+using Order = algebra::StorageOrder;
+using Matrix = algebra::Matrix<ElementType, Order>;
 
-## How to Use
+int main() {
+    // Create a matrix
+    Matrix matrix;
 
-To use the gradient descent implementation in your project, follow these steps:
+    // Read matrix from file
+    matrix.readMatrix("matrix.mtx");
 
-1. Clone this repository to your local machine:
+    // Perform operations...
+}
+```
 
-    ```bash
-    git clone git@github.com:ClaudiooBarbieri/challenges-pacs.git
-    ```
+## Features
 
-2. Modify the `parameters.json` file to specify the optimization options and the starting point (otherwise defaults are provided):
+- **Matrix creation**: Create sparse matrices either by providing non-zero elements directly or by reading from Matrix Market format files.
+- **Compression**: Compress matrices to optimize memory usage.
+- **Decompression**: Decompress matrices to access individual elements efficiently.
+- **Matrix-vector multiplication**: Multiply matrices with vectors efficiently.
+- **Storage order**: Choose between row-wise or column-wise storage order for matrices.
 
-    ```json
-    {
-        "option": {
-            "n_max_iter": 100,
-            "tol_res": 1e-6,
-            "tol_step": 1e-6,
-            "alpha0": 0.25,
-            "mu": 0.2,
-            "sigma": 0.3
-        },
-        "point": {
-            "x1": 0,
-            "x2": 0
-        },
-        "strategy": "inverse"
+## Example
+
+```cpp
+#include "matrix.hpp"
+
+using ElementType = double;
+using Order = algebra::StorageOrder;
+using Matrix = algebra::Matrix<ElementType, Order>;
+
+int main() {
+    // Create a row-wise matrix
+    Matrix matrix(3, 3, {
+        {{0, 1}, 3.0},
+        {{1, 0}, 2.0},
+        {{2, 2}, 1.0}
+    });
+
+    // Compress the matrix
+    matrix.compress();
+
+    // Perform matrix-vector multiplication
+    std::vector<ElementType> vector = {1.0, 2.0, 3.0};
+    std::vector<ElementType> result = matrix * vector;
+
+    // Output the result
+    for (auto& val : result) {
+        std::cout << val << " ";
     }
-    ```
+    std::cout << std::endl;
 
-    - `option`: Specifies the optimization options including the maximum number of iterations (`n_max_iter`), tolerance for the residual (`tol_res`), tolerance for the step (`tol_step`), initial step size (`alpha0`), damping parameter (`mu`), and scale parameter for Armijo strategy (`sigma`).
-    - `point`: Specifies the starting point for optimization.
-    - `strategy`: Specifies the optimization strategy which could be "exponential", "inverse", or "Armijo".
+    return 0;
+}
+```
 
-3. If you want to change the objective function, edit the `functions.cpp` file and modify `Function` and `Gradient` functors.
+## License
 
-4. Set the `EXAMPLES_INCLUDE` and `EXAMPLES_LIB` variables in the Makefile to point to the locations where you have the examples and libraries provided by the `pacs-examples` repository. (it is intended for people who are enrolled in the course, if not the only thing you need is the `json.h` header so set them in order to reach it)
-
-6. Run `make` command in the `src` directory and execute the `main`:
-
-    ```bash
-    cd src
-    make
-    ./main
-    ```
-
+This library is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
