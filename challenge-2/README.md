@@ -10,30 +10,9 @@ This is a C++ class template for handling sparse matrices. It provides functiona
 - **Matrix-vector multiplication**: Multiply matrices with vectors efficiently.
 - **Storage order**: Choose between row-wise or column-wise storage order for matrices.
 
-## Usage
+## Example of Usage
 
-To use this library, include the `matrix.hpp` header file in your C++ project and instantiate the `Matrix` class with the desired element type (`T`) and storage order (`Order`). Here's an example:
-
-```cpp
-#include "matrix.hpp"
-
-using ElementType = {typeofelement};
-using Order = algebra::StorageOrder; 
-template<typename T, Order O>
-using Matrix = algebra::Matrix<T,O>; 
-
-int main() {
-    // Create a matrix and choose the StorageOrder
-    Matrix<ElementType, StorageOrder::{RowWise/ColWise}> matrix;
-
-    // Read matrix from file
-    matrix.readMatrix("matrix.mtx");
-
-    // Perform operations...
-}
-```
-
-## Example
+To use this library, include the `matrix.hpp` header file in your C++ project and instantiate the `Matrix` class with the desired element type (`ElementType`) and storage order (`Order`). Here's an example:
 
 ```cpp
 #include "matrix.hpp"
@@ -64,9 +43,12 @@ int main() {
     }
     std::cout << std::endl;
 
+    // Perform other operation
+
     return 0;
 }
 ```
+
 ## Testing
 
 The main function is made for testing routine to evaluate the performance of matrix-vector multiplication for different combinations of storage order and matrix state (compressed or uncompressed). Here's a brief description of the testing process:
