@@ -2,6 +2,14 @@
 
 This is a C++ class template for handling sparse matrices. It provides functionalities for matrix-vector multiplication, matrix compression, decompression, reading matrices from Matrix Market format files, and more.
 
+## Features
+
+- **Matrix creation**: Create sparse matrices either by providing non-zero elements directly or by reading from Matrix Market format files.
+- **Compression**: Compress matrices in CSR CSC format to optimize memory usage
+- **Decompression**: Decompress matrices to access individual elements efficiently.
+- **Matrix-vector multiplication**: Multiply matrices with vectors efficiently.
+- **Storage order**: Choose between row-wise or column-wise storage order for matrices.
+
 ## Usage
 
 To use this library, include the `matrix.hpp` header file in your C++ project and instantiate the `Matrix` class with the desired element type (`T`) and storage order (`Order`). Here's an example:
@@ -24,14 +32,6 @@ int main() {
     // Perform operations...
 }
 ```
-
-## Features
-
-- **Matrix creation**: Create sparse matrices either by providing non-zero elements directly or by reading from Matrix Market format files.
-- **Compression**: Compress matrices in CSR CSC format to optimize memory usage
-- **Decompression**: Decompress matrices to access individual elements efficiently.
-- **Matrix-vector multiplication**: Multiply matrices with vectors efficiently.
-- **Storage order**: Choose between row-wise or column-wise storage order for matrices.
 
 ## Example
 
