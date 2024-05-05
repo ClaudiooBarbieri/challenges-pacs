@@ -65,6 +65,19 @@ int main() {
     return 0;
 }
 ```
+## Testing
+
+The main function of this library includes a testing routine to evaluate the performance of matrix-vector multiplication for different combinations of storage order and matrix state (compressed or uncompressed). Here's a brief description of the testing process:
+
+1. **Initialization**: Initialize sparse matrices by reading them from Matrix Market format files. Two matrices are created, one stored in row-wise order and the other in column-wise order.
+
+2. **Matrix-Vector Multiplication**: Perform matrix-vector multiplication using both compressed and uncompressed matrices. Timing information is collected for each combination.
+
+3. **Results**: Calculate and print the mean elapsed time of matrix-vector product for each combination of storage order and matrix state. Additionally, the compression gain percentage is calculated for both row-wise and column-wise storage orders.
+
+This testing routine helps assess the efficiency and effectiveness of matrix compression in terms of computational performance.
+
+
 
 ## License
 
