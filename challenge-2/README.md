@@ -1,58 +1,64 @@
-# Gradient Descent Implementation
+# Sparse Matrix Class Template
 
-This repository contains an implementation of the gradient descent optimization algorithm given as challenge for the PACS course 2023/24.
+This is a C++ class template for handling sparse matrices. It provides functionalities for matrix-vector multiplication, matrix compression, decompression, reading matrices from Matrix Market format files, and more.
 
-## Overview
+## Features
 
-Gradient descent is an iterative optimization algorithm used to minimize some function by iteratively moving in the direction of steepest descent as defined by the negative of the gradient. More detail about the requests in the doc folder
+- **Matrix creation**: Create sparse matrices either by providing non-zero elements directly or by reading from Matrix Market format files.
+- **Compression**: Compress matrices in CSR CSC format to optimize operation and memory usage
+- **Decompression**: Decompress matrices to access individual elements efficiently.
+- **Matrix-vector multiplication**: Multiply matrices with vectors efficiently.
+- **Storage order**: Choose between row-wise or column-wise storage order for matrices.
 
-## Implementation Details
+## Example of Usage
 
-The gradient descent algorithm implemented in this repository is designed to minimize a given objective function. The objective function and its gradient are provided in a C++ file named `functions.cpp`, and the initial parameters are specified in a JSON file named `parameters.json` and stored in `Struct Parameters` defined in `parameters.hpp` . Additionally, the optimization algorithm according to the selected strategy is implemented in `gradientMethod.cpp`.
+To use this library, include the `matrix.hpp` header file in your C++ project and instantiate the `Matrix` class with the desired element type (`ElementType`) and storage order (`Order`). Here's an example:
 
-## How to Use
+```cpp
+#include "matrix.hpp"
 
-To use the gradient descent implementation in your project, follow these steps:
+using ElementType = double; 
+using Order = algebra::StorageOrder;
+template<typename T, Order O>
+using Matrix = algebra::Matrix<T,O>; 
 
-1. Clone this repository to your local machine:
+int main() {
+    // Create a row-wise matrix
+    Matrix<ElementType, Order::RowWise matrix(3, 3, {
+        {{0, 1}, 3.0},
+        {{1, 0}, 2.0},
+        {{2, 2}, 1.0}
+    });
 
-    ```bash
-    git clone git@github.com:ClaudiooBarbieri/challenges-pacs.git
-    ```
+    // Compress the matrix
+    matrix.compress();
 
-2. Modify the `parameters.json` file to specify the optimization options and the starting point (otherwise defaults are provided):
+    // Perform matrix-vector multiplication
+    std::vector<ElementType> vector = {1.0, 2.0, 3.0};
+    std::vector<ElementType> result = matrix * vector;
 
-    ```json
-    {
-        "option": {
-            "n_max_iter": 100,
-            "tol_res": 1e-6,
-            "tol_step": 1e-6,
-            "alpha0": 0.25,
-            "mu": 0.2,
-            "sigma": 0.3
-        },
-        "point": {
-            "x1": 0,
-            "x2": 0
-        },
-        "strategy": "inverse"
+    // Output the result
+    for (auto& val : result) {
+        std::cout << val << " ";
     }
-    ```
+    std::cout << std::endl;
 
-    - `option`: Specifies the optimization options including the maximum number of iterations (`n_max_iter`), tolerance for the residual (`tol_res`), tolerance for the step (`tol_step`), initial step size (`alpha0`), damping parameter (`mu`), and scale parameter for Armijo strategy (`sigma`).
-    - `point`: Specifies the starting point for optimization.
-    - `strategy`: Specifies the optimization strategy which could be "exponential", "inverse", or "Armijo".
+    // Perform other operation
 
-3. If you want to change the objective function, edit the `functions.cpp` file and modify `Function` and `Gradient` functors.
+    return 0;
+}
+```
 
-4. Set the `EXAMPLES_INCLUDE` and `EXAMPLES_LIB` variables in the Makefile to point to the locations where you have the examples and libraries provided by the `pacs-examples` repository. (it is intended for people who are enrolled in the course, if not the only thing you need is the `json.h` header so set them in order to reach it)
+## Testing
 
-6. Run `make` command in the `src` directory and execute the `main`:
+The main function is made for testing routine to evaluate the performance of matrix-vector multiplication for different combinations of storage order and matrix state (compressed or uncompressed). Here's a brief description of the testing process:
 
-    ```bash
-    cd src
-    make
-    ./main
-    ```
+1. **Initialization**: Initialize sparse matrices by reading them from Matrix Market format files. Two matrices are created, one stored in row-wise order and the other in column-wise order.
+
+2. **Matrix-Vector Multiplication**: Perform matrix-vector multiplication using both compressed and uncompressed matrices. Timing information is collected for each combination.
+
+3. **Results**: Calculate and print the mean elapsed time of matrix-vector product for each combination of storage order and matrix state. Additionally, the compression gain percentage is calculated for both row-wise and column-wise storage orders.
+
+This testing routine helps assess the efficiency and effectiveness of matrix compression in terms of computational performance.
+
 
