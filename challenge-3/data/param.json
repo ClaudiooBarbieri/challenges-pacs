@@ -1,0 +1,15 @@
+{
+    "mesh": {
+        "minX": 100,
+        "maxX": 1e-6,
+        "minY": 1e-6,
+        "maxY": 0.25,
+        "n": 16
+    },
+    "option": {
+        "maxIter": 1000,
+        "tolerance": 1e-6
+    },
+    "function":
+        "8*pi^2*sin(2*pi*x)*sin(2*pi*y)"
+}

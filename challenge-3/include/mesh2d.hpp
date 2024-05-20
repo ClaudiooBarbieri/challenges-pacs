@@ -1,5 +1,5 @@
 #ifndef MESH_2D_HPP
-#define MESH__2D_HPP
+#define MESH_2D_HPP
 
 #include <iostream>
 #include <vector>
@@ -25,12 +25,12 @@ namespace challenge3 {
         double hy; //< y spacing
 
         /**
-         * @brief constructor given the domain and number of points along each direction
+         * @brief constructor given bottom left and top right points of the domain and number of points along each direction
         */
         Mesh2D (const point & bl, const point & tr, size_t nx_, size_t ny_);
 
         /**
-         * @brief constructor given the domain and the spacing along each direction
+         * @brief constructor given bottom left and top right points of the domain and the spacing along each direction
          * @note if no possible evenly divison reduce the spacing to suitable value
         */
         Mesh2D (const point & bl, const point & tr, double hx_, double hy_);
@@ -50,19 +50,11 @@ namespace challenge3 {
         friend std::ostream& operator<<(std::ostream& os, const Mesh2D & mesh);
 
         /// getters
-        //inline Domain getDomain() const { return domain; }
         inline size_t getNx() const { return nx; }
         inline size_t getNy() const { return ny; }
         inline double getHx() const { return hx; }
         inline double getHy() const { return hy; }
     };
 }
-
-/*
-inline double getMinX() const { return domain.getMinX(); }; ///< minimum x value of the domain
-        inline double getMinY() const { return domain.getMinY(); }; ///< minimum y value of the domain
-        inline double getMaxX() const { return domain.getMaxX(); }; ///< maximum x value of the domain
-        inline double getMaxY() const { return domain.getMaxY(); }; ///< maximum y value of the domain
-*/
 
 #endif

@@ -13,6 +13,7 @@ namespace challenge3 {
 
     /// constructor given the domain and number of points along each direction
     Mesh2D::Mesh2D(const point & bl, const point & tr, size_t nx_, size_t ny_) : Domain(bl,tr),nx{nx_},ny{ny_} { 
+
         hx = (maxX-minX)/(nx-1); ///< setting x spacing according to number of points wanted
         hy = (maxY-minY)/(ny-1); ///< setting y spacing according to number of points wanted
 
@@ -41,8 +42,8 @@ namespace challenge3 {
 
     /// access point operator
     point Mesh2D::operator()(size_t i, size_t j) const {
-        if(i-1<ny && j-1<nx){ ///< check correct indexing value
-            return coordinate[(i-1)*nx+j-1]; ///! row index span y and column index span x
+        if(i<ny && j<nx){ ///< check correct indexing value
+            return coordinate[i*nx+j]; ///! row index span y and column index span x
         }
             throw std::out_of_range("Invalid index!");
         

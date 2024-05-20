@@ -15,10 +15,15 @@ namespace challenge3 {
 
     /// constructor with bottom-left top-right points
     Domain::Domain(const point &bl, const point &tr) : bottomLeft{bl},topRight{tr} {
-        minX = bottomLeft[0];  ///< minimum x value of the domain
-        minY = bottomLeft[1]; ///< minimum y value of the domain
-        maxX = topRight[0];  ///< maximum x value of the domain
-        maxY = topRight[1];  ///< maximum y value of the domain
+        if(bottomLeft[0]<topRight[0] && bottomLeft[1]<topRight[1]){ ///< check that is a proper rectangular domain
+            minX = bottomLeft[0]; ///< minimum x value of the domain
+            minY = bottomLeft[1]; ///< minimum y value of the domain
+            maxX = topRight[0];  ///< maximum x value of the domain
+            maxY = topRight[1];  ///< maximum y value of the domain
+        }
+        else{
+            throw std::invalid_argument("Not proper rectangular!");
+        } 
     };
 
 }
