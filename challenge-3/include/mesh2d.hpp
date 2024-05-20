@@ -5,18 +5,19 @@
 #include <vector>
 #include <array>
 #include <cmath>
+#include <stdexcept>
 #include "domain2d.hpp"
 
 
 namespace challenge3 {
 
     /**
-     * @brief Cartesian 2D grid mesh 
+     * @brief Cartesian 2D grid mesh on rectangular domain
     */
     class Mesh2D {
         using point = std::array<double,2>;
     private:
-        std::vector<point> points; ///< matrix containing points of the grid
+        std::vector<point> coordinate; ///< coordinates of the points in the grid stored left to right, bottom to top
         Domain domain; //< bottom-left and top-right vertex of the rectangular domain 
         size_t nx; //< number of split along x
         size_t ny; //< number of split along y
@@ -42,9 +43,11 @@ namespace challenge3 {
         static Mesh2D createWithPoints(const Domain & domain, size_t nx, size_t ny);
         static Mesh2D createWithSpacing(const Domain & domain, double hx, double hy);
 
+        /// access point by its indexes
+        point operator()(size_t i, size_t j) const;
+
         /// print mesh information 
         friend std::ostream& operator<<(std::ostream& os, const Mesh2D & mesh);
-
 
         /// getters
         inline Domain getDomain() const { return domain; }

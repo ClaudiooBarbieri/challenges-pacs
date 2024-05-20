@@ -9,8 +9,16 @@ using challenge3::JacobiSolver;
 using challenge3::Domain;
 
 int main(int argc, char * argv[]){
-    Domain mydomain({0,0},{5,10});
-    Mesh2D mymesh = Mesh2D::createWithSpacing(mydomain,2,2);
+    Domain mydomain({0,0},{3,2});
+    Mesh2D mymesh = Mesh2D::createWithPoints(mydomain,4,3);
     std::cout << mymesh;
+    std::cout << mymesh(2,3)[0] << "," << mymesh(2,3)[1] << std::endl;
     return 0;
 }
+
+/*
+
+  8  9  10 11  20 21 22 23  
+  4  5  6  7   10 11 12 13
+  0  1  2  3   00 01 02 03
+*/
