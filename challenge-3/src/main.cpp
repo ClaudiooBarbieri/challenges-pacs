@@ -9,8 +9,7 @@ using challenge3::JacobiSolver;
 using challenge3::Domain;
 
 int main(int argc, char * argv[]){
-    Domain mydomain({0,0},{3,2});
-    Mesh2D mymesh = Mesh2D::createWithPoints(mydomain,4,3);
+    Mesh2D mymesh = Mesh2D::createWithPoints({0,0},{3,2},4,3);
     std::cout << mymesh;
     std::cout << mymesh(2,3)[0] << "," << mymesh(2,3)[1] << std::endl;
     return 0;
