@@ -4,11 +4,11 @@
         "minY": 0,
         "maxX": 1,
         "maxY": 1,
-        "n": 16,
+        "n": 64,
         "h": 0.1
     },
     "option": {
-        "iteration": 1000,
+        "iteration": 100000,
         "tolerance": 1e-6
     },
     "function":

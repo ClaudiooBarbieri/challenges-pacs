@@ -30,7 +30,7 @@ namespace challenge3{
         for(size_t k = 0 ; k < nMax && e >= tol; ++k){
             e = updateSol(); ///< get the norm of the increment of updated solution
         }
-        generateVTKFile("../VTK/solution.vtk",mesh.getMinX(),mesh.getMinY(),sol,n,n,h,h);
+        generateVTKFile("../VTK/solution",mesh.getMinX(),mesh.getMinY(),sol,n,n,h,h);
     }
 
     double JacobiSolver::updateSol(){
