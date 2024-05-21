@@ -2,7 +2,7 @@
 
 namespace challenge3{
 
-    JacobiSolver::JacobiSolver(const Mesh2D & mesh_, const std::string & expr, size_t nMax_, double tol_) : mesh{mesh_},nMax{nMax_},tol{tol_} {
+    JacobiSolver::JacobiSolver(const Mesh2D & mesh_, const std::string & expr, unsigned int nMax_, double tol_) : mesh{mesh_},nMax{nMax_},tol{tol_} {
         /// check mesh condition
         if (mesh.getHx()!=mesh.getHy() || mesh.getNx()!=mesh.getNy()) {
             throw std::invalid_argument("Not squared and/or evenly spaced mesh");
@@ -30,7 +30,7 @@ namespace challenge3{
         for(size_t k = 0 ; k < nMax && e >= tol; ++k){
             e = updateSol(); ///< get the norm of the increment of updated solution
         }
-        generateVTKFile("../VTK/solution.vtk",mesh,sol,n,n,h,h);
+        generateVTKFile("../VTK/solution.vtk",mesh.getMinX(),mesh.getMinY(),sol,n,n,h,h);
     }
 
     double JacobiSolver::updateSol(){
@@ -48,14 +48,14 @@ namespace challenge3{
             }
         }
         std::swap(sol,newSol); ///< set current solution to the one calculated
-        return JacobiSolver::incrNorm(newSol,sol);
+        return JacobiSolver::norm(newSol,sol);
     }
 
-    double JacobiSolver::incrNorm(const solution & sol1 , const solution & sol2) const {
+    double JacobiSolver::norm(const std::vector<std::vector<double>> & m1 , const std::vector<std::vector<double>> & m2) const {
         double ss{0.};
         for(size_t i = 0 ; i < n ; ++i){
             for(size_t j = 0 ; j < n; ++j){
-               ss+=(sol1[i][j]-sol2[i][j])*(sol1[i][j]-sol2[i][j]);
+               ss+=(m1[i][j]-m2[i][j])*(m1[i][j]-m2[i][j]);
             }
         }
         return sqrt(h*ss);

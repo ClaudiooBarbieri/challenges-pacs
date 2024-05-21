@@ -22,7 +22,7 @@ namespace challenge3 {
         solution sol; ///< discrete solution of the Laplace equation
         double x; ///< x variable for parser
         double y; ///< y variable for parser
-        size_t nMax; ///< maximum number of iteration
+        unsigned int nMax; ///< maximum number of iteration
         double tol; ///< tolerance of the method
         size_t n; ///< points in both x and y direction
         double h; ///< spacing between points
@@ -33,8 +33,8 @@ namespace challenge3 {
         /// update solution and return the norm of the increment
         double updateSol(); 
 
-        /// norm of the increment between solutions
-        double incrNorm(const solution & sol1 , const solution & sol2) const;
+        /// matrix L2 norm of the difference 
+        double norm(const std::vector<std::vector<double>> & m1 , const std::vector<std::vector<double>> & m2) const;
 
     public:
         /**
@@ -44,7 +44,7 @@ namespace challenge3 {
          * @param nMax_ max number of iteration
          * @param tol_ tolerance
         */
-        JacobiSolver(const Mesh2D & mesh_, const std::string & expr, size_t nMax_, double tol_);
+        JacobiSolver(const Mesh2D & mesh_, const std::string & expr, unsigned int nMax_, double tol_);
         
         /// solve method and write VTK file solution
         void solve();

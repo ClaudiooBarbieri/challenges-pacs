@@ -10,39 +10,49 @@ using challenge3::point;
 using challenge3::JacobiSolver;
 using challenge3::Domain;
 
+/// parameters for mesh, function and method option
+struct Parameters{
+  /// mesh  
+  double x0; ///< min x
+  double y0; ///< min y
+  double xn; ///< max x
+  double yn; ///< max y
+  size_t n; ///< number of points in each direction
+  double h; ///< spacing
+  /// method option
+  unsigned int maxIter; ///< number of maximum iteration
+  double tol; ///< tolerance
+  /// function
+  std::string f;
+};
+
+/// function to read parameters
+Parameters readParameters(const std::string & parFileName);
+
 int main(int argc, char * argv[]){
-    Mesh2D mymesh = Mesh2D::createWithPoints({0,0},{1,1},16,16);
-    JacobiSolver js(mymesh,"8*_pi^2*sin(2*_pi*x)*sin(2*_pi*y)",1000,1e-6);
-    js.solve();
-    return 0;
+  Parameters p = readParameters("../data/param.json");
+  Mesh2D mesh = Mesh2D::createWithPoints({p.x0,p.y0},{p.xn,p.yn},p.n,p.n);
+  JacobiSolver js(mesh,p.f,p.maxIter,p.tol);
+  js.solve();
+  return 0;
 }
 
-/*Parameters readParameters(const std::string & parFileName){
-    Parameters parameters; ///< Parameters object to hold the read parameters
-    Parameters defaultParameters; ///< Default parameters used when values are not provided in the JSON file
+Parameters readParameters(const std::string & parFileName){
+  Parameters parameters; ///< Parameters object to hold the read parameters
 
-    // Reading JSON file with data
-    std::ifstream f(parFileName);
-    nlohmann::json parFile = nlohmann::json::parse(f);      
+  // Reading JSON file with data
+  std::ifstream f(parFileName);
+  nlohmann::json parFile = nlohmann::json::parse(f);      
+  /// read and set values
+  parameters.x0 = parFile["mesh"].value("minX", 0);
+  parameters.y0 = parFile["mesh"].value("minY", 0);
+  parameters.xn = parFile["mesh"].value("maxX", 1);
+  parameters.yn = parFile["mesh"].value("maxY", 1);
+  parameters.n = parFile["mesh"].value("n", 2);
+  parameters.h = parFile["mesh"].value("h", 0.5);
+  parameters.maxIter = parFile["option"].value("iteration", 1);
+  parameters.tol = parFile["option"].value("tolerance", 1e-3);
+  parameters.f = parFile["function"];
 
-    // Read options
-    parameters.maxIter = parFile["option"].value("n_max_iter", defaultParameters.maxIter);
-    parameters.resTol = parFile["option"].value("tol_res", defaultParameters.resTol);
-    parameters.stepTol = parFile["option"].value("tol_step", defaultParameters.stepTol);
-    parameters.alpha0 = parFile["option"].value("alpha0", defaultParameters.alpha0);
-    parameters.mu = parFile["option"].value("mu", defaultParameters.mu);
-    parameters.sigma = parFile["option"].value("sigma", defaultParameters.sigma);
-
-    // Read starting point
-    parameters.x = {parFile["point"].value("x1", 0.0), parFile["point"].value("x2", 0.0)};
-
-    parameters.s = stringToStrategy(parFile["strategy"]); ///< Convert strategy string to enum
-
-    return parameters; ///< Return the read parameters
-}*/
-
-/*
-  8  9  10 11  20 21 22 23  
-  4  5  6  7   10 11 12 13
-  0  1  2  3   00 01 02 03
-*/
+  return parameters; ///< Return the read parameters
+}
