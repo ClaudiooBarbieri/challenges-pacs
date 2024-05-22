@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 
+
 namespace challenge3 {
 
     // Generates a STRUCTURES VTK file with a mesh

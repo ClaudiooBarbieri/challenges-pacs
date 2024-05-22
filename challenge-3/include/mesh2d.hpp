@@ -1,52 +1,87 @@
 #ifndef MESH_2D_HPP
 #define MESH_2D_HPP
 
+#include "domain2d.hpp"
+
 #include <iostream>
 #include <vector>
 #include <array>
 #include <cmath>
 #include <stdexcept>
-#include "domain2d.hpp"
 
 
 namespace challenge3 {
 
     /**
-     * @brief Cartesian 2D grid mesh on the rectangular domain
+     * @brief Cartesian 2D grid mesh on rectangular domain
+     * @note points are stored left to right bottom to top
     */
-    class Mesh2D : public Domain{
-        using point = std::array<double,2>;
+    class Mesh2D : public Domain2D{
+
     private:
-        std::vector<point> coordinate; ///< coordinates of the points in the grid stored left to right, bottom to top
-        //Domain domain; //< bottom-left and top-right vertex of the rectangular domain 
-        size_t nx; //< number of split along x
-        size_t ny; //< number of split along y
-        double hx; //< x spacing
-        double hy; //< y spacing
+
+        std::vector<Point2D> coordinate; ///< coordinates of the Point2Ds in the grid stored left to right, bottom to top 
+        size_t nx; //< number of points in x direction
+        size_t ny; //< number of points in y direction
+        double hx; //< spacing along x
+        double hy; //< spacing along y
 
         /**
-         * @brief constructor given bottom left and top right points of the domain and number of points along each direction
+         * @brief constructor given ranges of x and y and number of points along each direction
         */
-        Mesh2D (const point & bl, const point & tr, size_t nx_, size_t ny_);
+        Mesh2D (double minX_, double maxX_, double minY_, double maxY_, size_t nx_, size_t ny_);
 
         /**
-         * @brief constructor given bottom left and top right points of the domain and the spacing along each direction
+         * @brief constructor given ranges of x and y and spacing along each direction
          * @note if no possible evenly divison reduce the spacing to suitable value
         */
-        Mesh2D (const point & bl, const point & tr, double hx_, double hy_);
+        Mesh2D (double minX_, double maxX_, double minY_, double maxY_, double hx_, double hy_);
+
+        /**
+         * @brief constructor given top right and bottom left points and number of points along each direction
+        */
+        Mesh2D (const Point2D & tr, const Point2D & bl, size_t nx_, size_t ny_);
+
+        /**
+         * @brief constructor given top right and bottom left points and spacing along each direction
+         * @note if no possible evenly divison reduce the spacing to suitable value
+        */
+        Mesh2D (const Point2D & tr, const Point2D & bl, double hx_, double hy_);
 
     public:
 
-        Mesh2D() = default; //< default empty constructor
+        // ***** factory methods to select explicitly the strategy of the creation of the mesh (ranges) ***** //
 
-        /// factory methods to select explicityle the strategy of the creation of the mesh
-        static Mesh2D createWithPoints(const point & bl, const point & tr, size_t nx, size_t ny);
-        static Mesh2D createWithSpacing(const point & bl, const point & tr, double hx, double hy);
+        /**
+         * @brief factory given ranges and number of points
+        */
+        static Mesh2D createWithPoints(double minX_, double maxX_, double minY_, double maxY_, size_t nx, size_t ny);
 
-        /// access point by its indexes
-        point operator()(size_t i, size_t j) const;
+        /**
+         * @brief factory given ranges and spacing
+        */
+        static Mesh2D createWithSpacing(double minX_, double maxX_, double minY_, double maxY_, double hx, double hy);
 
-        /// print mesh information 
+        // ***** factory methods to select explicitly the strategy of the creation of the mesh (vertices) ***** //
+
+        /**
+         * @brief factory given vertices and number of points
+        */
+        static Mesh2D createWithPoints(const Point2D & tr, const Point2D & bl, size_t nx, size_t ny);
+
+        /**
+         * @brief factory given vertices and spacing
+        */
+        static Mesh2D createWithSpacing(const Point2D & tr, const Point2D & bl, double hx, double hy);
+
+        /**
+         * @brief point by its indexes in the mesh
+        */
+        const Point2D & operator()(size_t i, size_t j) const;
+
+        /**
+         * @brief print the mesh
+        */
         friend std::ostream& operator<<(std::ostream& os, const Mesh2D & mesh);
 
         /// getters
@@ -54,7 +89,9 @@ namespace challenge3 {
         inline size_t getNy() const { return ny; }
         inline double getHx() const { return hx; }
         inline double getHy() const { return hy; }
+
     };
+
 }
 
 #endif
