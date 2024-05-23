@@ -58,6 +58,13 @@ namespace challenge3 {
         void solve();
 
         /**
+         * @brief parallele solver method
+         * @note in stencil formula the h^2 in ../doc documentation become hx*hy
+         * @note automatically generate the VTK file format of it
+        */
+        void parallelSolve();
+
+        /**
          * @brief solution getter
         */
         inline solution getSolution() { return sol;}
@@ -73,7 +80,7 @@ namespace challenge3 {
         /**
          * @brief set solution size according to mesh dimension
         */
-        void initDim(solution & s);
+        inline void initDim(solution & s) { s.resize(ny,std::vector<double>(nx,0)); };
 
         /**
          * @brief tie x,y variable to the parser and set its expression

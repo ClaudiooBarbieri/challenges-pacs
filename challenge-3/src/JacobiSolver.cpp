@@ -83,13 +83,86 @@ namespace challenge3{
 
     };
 
-    void JacobiSolver::initDim(solution & s){
+    void JacobiSolver::parallelSolve(){
 
-        s.resize(ny); ///< number of rows
-        for(auto & row : s)
-            row.resize(nx); ///< number of columns
+        // setup MPI variables
+        int rank, size;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+        int allConverged = 0; ///< to check convergence of all processes
+
+        int nBaseRows = ny / size; ///< common number of rows for process, even spread part
+        int nExtraRows = ny % size; ///< extra number of rows to be accounted
+
+        int firstRow = rank * nBaseRows + std::min(rank, nExtraRows); ///< set first row, consider the number of extra rows already assigned
+        int lastRow = firstRow + ((nExtraRows > rank) ? nBaseRows + 1 : nBaseRows) - 1; ///< last row considring if it has extra rows to be considered
+
+        int localRows = lastRow - firstRow + 1; ///< number of local rows
+        sol.resize(localRows, std::vector<double>(nx,0)); ///< adjust local solution size
         
+        solution newSol; ///< local solution for update
+        newSol.resize(localRows, std::vector<double>(nx,0)); ///< size new solution
+
+        std::vector<double> belowRow(0,nx); ///< for receiving row below evaluated by previous rank process
+        std::vector<double> aboveRow(0,nx); ///< for receiving row above evaluated by succesive rank process
+
+        // Jacobi iteration
+        for(size_t k = 0 ; k < nMax && allConverged!=size ; ++k){
+
+            allConverged = 0; ///< reset convergence flag
+
+            if(rank != size - 1){ ///< if not last process send solution of last of your row and receive the first row of the following process
+                MPI_Sendrecv(sol[localRows-1].data(), nx, MPI_DOUBLE, rank+1, 0, aboveRow.data(), nx, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            }
+            if(rank != 0){ ///< if not first process send solution of first of your row and receive the last row of the previous process
+                MPI_Sendrecv(sol[0].data(), nx, MPI_DOUBLE, rank-1, 0, belowRow.data(), nx, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            }
+
+            // last row not to be considered for last rank process (boundary)
+            if(rank != size - 1){
+                for(size_t j = 1 ; j < nx-1; ++j){
+
+                    x = mesh(lastRow,j).getX(); ///< coordinate x value last row mesh correspondence
+                    y = mesh(lastRow,j).getY(); ///< coordinate y value last row mesh correspondence
+
+                    newSol[i][j] = .25*(aboveRow[j]+sol[i-1][j]+sol[i][j+1]+sol[i][j-1]+hx*hy*f.Eval()); ///<  four point stencil
+                }
+            }
+
+            // first row not to be considered for first process (boundary)
+            if(rank != 0){
+                for(size_t j = 1 ; j < nx-1; ++j){
+
+                    x = mesh(firstRow,j).getX(); ///< coordinate x value first row mesh correspondence
+                    y = mesh(firstRow,j).getY(); ///< coordinate y value first row mesh correspondence
+
+                    newSol[i][j] = .25*(sol[i+1][j]+belowRow[j]+sol[i][j+1]+sol[i][j-1]+hx*hy*f.Eval()); ///<  four point stencil
+                }
+            }
+
+            // middle rows
+            for(size_t i = 1 ; i < localRows - 1 ; ++i){
+
+                for(size_t j = 1 ; j < nx-1; ++j){
+
+                    x = mesh(firstRow + i,j).getX(); ///< coordinate x value on the mesh, offset wrt to first row of the current process
+                    y = mesh(firstRow + i,j).getY(); ///< coordinate y value on the mesh, offset wrt to first row of the current process
+
+                    newSol[i][j] = .25*(sol[i+1][j]+sol[i-1][j]+sol[i][j+1]+sol[i][j-1]+hx*hy*f.Eval()); ///<  four point stencil
+                }
+            }
+
+            std::swap(sol,newSol); ///< set current solution to the one calculated
+
+            if(JacobiSolver::norm(newSol,sol) < tol){ ///< check local tolerance convergence
+                allConverged = 1;
+            }
+            MPI_Allreduce(MPI_IN_PLACE, &allConverged, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD); ///< sum to consider how much processes converged
+        }
+
     }
+
 
     double JacobiSolver::norm(const std::vector<std::vector<double>> & m1 , const std::vector<std::vector<double>> & m2) const {
 

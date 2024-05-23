@@ -5,6 +5,8 @@
 #include "json.hpp"
 
 #include <iostream>
+#include <omp.h>
+#include <mpi.h>
 
 using challenge3::Point2D;
 using challenge3::Domain2D;
@@ -39,8 +41,9 @@ struct Parameters{
 */
 Parameters readParameters(const std::string & parFileName);
 
-int main(int argc, char * argv[]){
-  
+int main(int argc, char* argv[]){
+
+  MPI_INIT(&argc,&argv);
   // reading parameters
   Parameters p = readParameters("../data/param.json");
 
@@ -49,6 +52,10 @@ int main(int argc, char * argv[]){
 
   // init the solver
   JacobiSolver js(mesh,p.f,p.maxIter,p.tol,p.fBound);
+
+  js.parallelSolve();
+
+  MPI_Finalize();
 
   // solve
   js.solve();
