@@ -11,7 +11,7 @@
     },
     "option": {
         "iteration": 10000,
-        "tolerance": 1e-9
+        "tolerance": 1e-6
     },
     "function": {
         "f": "8*_pi^2*sin(2*_pi*x)*sin(2*_pi*y)",

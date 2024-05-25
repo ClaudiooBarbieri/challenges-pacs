@@ -272,6 +272,7 @@ namespace challenge3{
         MPI_Gather(&nElem, 1, MPI_INT, nReceive.data(), 1, MPI_INT, 0, MPI_COMM_WORLD); ///< gather the number of rows to receive for each rank
         MPI_Gather(&displacement, 1, MPI_INT, vDisplacement.data(), 1, MPI_INT, 0, MPI_COMM_WORLD); ///< gather the number of rows to receive for each rank
 
+        // global solution that collect local ones
         std::vector<double>  globalSol;
         if(rank == 0)
             globalSol.resize(nx*ny);
@@ -292,7 +293,9 @@ namespace challenge3{
                 std::vector<double> subVec(globalSol.begin() + i, globalSol.begin() + std::min(i + subSize, globalSol.size()));
                 vecOfVecs.push_back(subVec);
             }
-    
+
+            generateVTK(vecOfVecs, mesh.getMinX(), mesh.getMinY(), nx, ny, hx, hy, "_parallel_mat"+std::to_string(size));
+
         }
             
     };

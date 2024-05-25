@@ -43,25 +43,24 @@ Parameters readParameters(const std::string & parFileName);
 
 int main(int argc, char* argv[]){
 
-   // reading parameters
+  // reading parameters
   Parameters p = readParameters("../data/param.json");
 
   // initialize mesh
-  Mesh2D meshS = Mesh2D::createWithPoints(p.x0,p.xn,p.y0,p.yn,p.nx,p.ny);
+  Mesh2D mesh = Mesh2D::createWithPoints(p.x0,p.xn,p.y0,p.yn,p.nx,p.ny);
 
   // init the solver
-  JacobiSolver js(meshS,p.f,p.maxIter,p.tol,p.fBound);
+  JacobiSolver js(mesh,p.f,p.maxIter,p.tol,p.fBound);
 
   // solve
   js.solve();
 
-
   MPI_Init(&argc,&argv);
 
-  Mesh2D mesh = Mesh2D::createWithPoints(0,1,0,1,64,64);
-  std::string fun = "8*_pi^2*sin(2*_pi*x)*sin(2*_pi*y)";
-  parallelSolve(mesh,fun,10000,1e-9);
+  parallelSolve(mesh,p.f,p.maxIter,p.tol);
+
   MPI_Barrier(MPI_COMM_WORLD);
+
   MPI_Finalize();
 
   return 0;
