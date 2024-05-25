@@ -33,6 +33,7 @@ struct Parameters{
   /// functions
   std::string f; ///< function for solving
   std::string fBound; ///< function for boundary condition
+  std::string exactSol; ///< exact solution
 
 };
 
@@ -42,6 +43,14 @@ struct Parameters{
 Parameters readParameters(const std::string & parFileName);
 
 int main(int argc, char* argv[]){
+
+  // init mpi
+  MPI_Init(&argc,&argv);
+
+  // setup MPI variables
+  int rank, size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
 
   // reading parameters
   Parameters p = readParameters("../data/param.json");
@@ -53,9 +62,8 @@ int main(int argc, char* argv[]){
   JacobiSolver js(mesh,p.f,p.maxIter,p.tol,p.fBound);
 
   // solve
-  js.solve();
-
-  MPI_Init(&argc,&argv);
+  if(rank == 0)
+    js.solve();
 
   parallelSolve(mesh,p.f,p.maxIter,p.tol);
 
@@ -87,6 +95,7 @@ Parameters readParameters(const std::string & parFileName){
   parameters.tol = parFile["option"].value("tolerance", 1e-3);
   parameters.f = parFile["function"]["f"];
   parameters.fBound = parFile["function"]["fbound"];
+  parameters.exactSol = parFile["function"]["exact"];
 
   return parameters; ///< Return the read parameters
 }

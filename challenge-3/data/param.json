@@ -15,6 +15,7 @@
     },
     "function": {
         "f": "8*_pi^2*sin(2*_pi*x)*sin(2*_pi*y)",
-        "fbound" : "0*x+0*y"
+        "fbound" : "0*x+0*y",
+        "exact" : "sin(2*_pi*x)*sin(2*_pi*y)"
     }
 }
