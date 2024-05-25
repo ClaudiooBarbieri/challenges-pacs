@@ -10,8 +10,8 @@
         "hy": 0.1
     },
     "option": {
-        "iteration": 100000,
-        "tolerance": 1e-6
+        "iteration": 10000,
+        "tolerance": 1e-9
     },
     "function": {
         "f": "8*_pi^2*sin(2*_pi*x)*sin(2*_pi*y)",

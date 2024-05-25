@@ -24,8 +24,8 @@ namespace challenge3 {
             << "(" << domain.minX << "," << domain.maxY << ") ----- " 
             << "(" << domain.maxX << "," << domain.maxY << ")" << std::endl
             << " | " << std::setw(23) << " | " << std::endl
-            << "(" << domain.getMaxX() << "," << domain.getMaxY() << ") ----- " 
-            << "(" << domain.getMinX() << "," << domain.getMaxY() << ")"
+            << "(" << domain.minX << "," << domain.minY << ") ----- " 
+            << "(" << domain.maxX << "," << domain.minY << ")"
             << std::endl << std::endl;
         return os;
 

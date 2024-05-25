@@ -10,6 +10,7 @@
 #include <cmath>
 #include <algorithm>
 #include <fstream>
+#include <mpi.h>
 
 namespace challenge3 {
 
@@ -62,7 +63,7 @@ namespace challenge3 {
          * @note in stencil formula the h^2 in ../doc documentation become hx*hy
          * @note automatically generate the VTK file format of it
         */
-        void parallelSolve();
+        void parallelSolve(int argc, char* argv[]);
 
         /**
          * @brief solution getter
@@ -80,25 +81,57 @@ namespace challenge3 {
         /**
          * @brief set solution size according to mesh dimension
         */
-        inline void initDim(solution & s) { s.resize(ny,std::vector<double>(nx,0)); };
+        inline void setDim(solution & s) { s.resize(ny,std::vector<double>(nx,0)); };
 
         /**
          * @brief tie x,y variable to the parser and set its expression
         */
         void setParser(mu::Parser & parser, const std::string & expr);
-
-        /**
-         * @brief l2 matrix norm of the difference
-         * @note using the maximum spacing as h in given formula in ../doc
-        */
-        double norm(const std::vector<std::vector<double>> & m1 , const std::vector<std::vector<double>> & m2) const;
-
-        /**
-         * @brief generate VTK file of the solution
-        */
-        void generateVTK() const;
-
+        
     };
+
+     /**
+    * @brief l2 matrix norm of the difference
+    * @param h factor accounting the spacing
+    */
+    double norm(const std::vector<std::vector<double>> & m1 , const std::vector<std::vector<double>> & m2, double h);
+
+    /**
+     * @brief parallel solver
+     * @param mesh mesh on whic solve the problem
+     * @param function function of the problem
+     * @param nMax maximum number of iterations
+     * @param tol tolerance on the update of the solution
+    */
+    void parallelSolve(const Mesh2D & mesh, std::string & function, unsigned int nMax, double tol);
+
+    /**
+    * @brief generate VTK file of the solution
+    * @param values values in the form of matrix translated in vtk file
+    * @param x0 x coordinate of the origin of the grid
+    * @param y0 y coordinate of the origin of the grid
+    * @param nx number of points along x direction
+    * @param ny number of points along y direction
+    * @param hx spacing in x direction
+    * @param hy spacing in y direction
+    * @param extra string put as "solution"+extra+".vtk"
+    */
+    void generateVTK(const std::vector<std::vector<double>> & sol, double x0, double y0, size_t nx, size_t ny, double hx, double hy,  const std::string & extra = "");
+
+    /**
+    * @brief generate VTK file of the solution
+    * @param values values in the form of a vector to be translated in vtk file
+    * @param x0 x coordinate of the origin of the grid
+    * @param y0 y coordinate of the origin of the grid
+    * @param nx number of points along x direction
+    * @param ny number of points along y direction
+    * @param hx spacing in x direction
+    * @param hy spacing in y direction
+    * @param extra string put as "solution"+extra+".vtk"
+    */
+    void generateVTK(const std::vector<double> & values, double x0, double y0, size_t nx, size_t ny, double hx, double hy,  const std::string & extra = "");
+
+
 }
 
 #endif
