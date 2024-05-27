@@ -1,0 +1,132 @@
+hal-9000
+    description: Computer
+    width: 64 bits
+    capabilities: smp vsyscall32
+  *-core
+       description: Motherboard
+       physical id: 0
+     *-memory
+          description: System memory
+          physical id: 0
+          size: 8GiB
+     *-cpu
+          product: Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz
+          vendor: Intel Corp.
+          physical id: 1
+          bus info: cpu@0
+          version: 6.126.5
+          width: 64 bits
+          capabilities: fpu fpu_exception wp vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp x86-64 constant_tsc arch_perfmon rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid pni pclmulqdq vmx ssse3 fma cx16 pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid fsrm md_clear flush_l1d arch_capabilities
+          configuration: microcode=4294967295
+     *-generic
+          description: System peripheral
+          product: Virtio file system
+          vendor: Red Hat, Inc.
+          physical id: 2
+          bus info: pci@7bb7:00:00.0
+          version: 01
+          width: 64 bits
+          clock: 33MHz
+          capabilities: msix bus_master cap_list
+          configuration: driver=virtio-pci latency=64
+          resources: iomemory:e0-df iomemory:e0-df iomemory:c0-bf irq:0 memory:e00000000-e00000fff memory:e00001000-e00001fff memory:c00000000-dffffffff
+        *-virtio1 UNCLAIMED
+             description: Virtual I/O device
+             physical id: 0
+             bus info: virtio@1
+             configuration: driver=virtiofs
+     *-display:0
+          description: 3D controller
+          product: Microsoft Corporation
+          vendor: Microsoft Corporation
+          physical id: 3
+          bus info: pci@ab54:00:00.0
+          version: 00
+          width: 32 bits
+          clock: 33MHz
+          capabilities: bus_master cap_list
+          configuration: driver=dxgkrnl latency=0
+          resources: irq:0
+     *-scsi:0
+          description: SCSI storage controller
+          product: Virtio console
+          vendor: Red Hat, Inc.
+          physical id: 4
+          bus info: pci@aefb:00:00.0
+          version: 01
+          width: 64 bits
+          clock: 33MHz
+          capabilities: scsi msix bus_master cap_list
+          configuration: driver=virtio-pci latency=64
+          resources: iomemory:90-8f iomemory:90-8f iomemory:90-8f irq:0 memory:9ffe00000-9ffe00fff memory:9ffe01000-9ffe01fff memory:9ffe02000-9ffe02fff
+        *-virtio0 UNCLAIMED
+             description: Virtual I/O device
+             physical id: 0
+             bus info: virtio@0
+             configuration: driver=virtio_console
+     *-display:1
+          description: 3D controller
+          product: Microsoft Corporation
+          vendor: Microsoft Corporation
+          physical id: 5
+          bus info: pci@d8a7:00:00.0
+          version: 00
+          width: 32 bits
+          clock: 33MHz
+          capabilities: bus_master cap_list
+          configuration: driver=dxgkrnl latency=0
+          resources: irq:0
+     *-pnp00:00
+          product: PnP device PNP0b00
+          physical id: 6
+          capabilities: pnp
+          configuration: driver=rtc_cmos
+     *-scsi:1
+          physical id: 7
+          logical name: scsi0
+        *-disk:0
+             description: SCSI Disk
+             product: Virtual Disk
+             vendor: Linux
+             physical id: 0.0.0
+             bus info: scsi@0:0.0.0
+             logical name: /dev/sda
+             version: 1.0
+             size: 388MiB
+             capabilities: extended_attributes large_files huge_files extents ext2 initialized
+             configuration: ansiversion=5 filesystem=ext2 logicalsectorsize=512 sectorsize=512 state=clean
+        *-disk:1
+             description: Linux swap volume
+             product: Virtual Disk
+             vendor: Msft
+             physical id: 0.0.1
+             bus info: scsi@0:0.0.1
+             logical name: /dev/sdb
+             version: 1
+             serial: 376d3de9-054f-4f7e-b2ba-9ff44f38299d
+             size: 2GiB
+             capacity: 2GiB
+             capabilities: swap initialized
+             configuration: ansiversion=5 filesystem=swap logicalsectorsize=512 pagesize=4096 sectorsize=4096
+        *-disk:2
+             description: EXT4 volume
+             product: Virtual Disk
+             vendor: Linux
+             physical id: 0.0.2
+             bus info: scsi@0:0.0.2
+             logical name: /dev/sdc
+             logical name: /
+             logical name: /mnt/wslg/distro
+             version: 1.0
+             serial: 99b8646e-3d08-4437-8620-b86ed6bfb726
+             size: 1TiB
+             capabilities: journaled extended_attributes large_files huge_files dir_nlink recover 64bit extents ext4 ext2 initialized
+             configuration: ansiversion=5 created=2023-03-22 19:45:17 filesystem=ext4 lastmountpoint=/distro logicalsectorsize=512 modified=2024-05-27 08:21:13 mount.fstype=ext4 mount.options=ro,relatime,discard,errors=remount-ro,data=ordered mounted=2024-05-27 08:21:13 sectorsize=4096 state=mounted
+  *-network
+       description: Ethernet interface
+       physical id: 1
+       logical name: eth0
+       serial: 00:15:5d:c0:7e:6a
+       size: 10Gbit/s
+       capabilities: ethernet physical
+       configuration: autonegotiation=off broadcast=yes driver=hv_netvsc driverversion=5.15.146.1-microsoft-standard-W duplex=full firmware=N/A ip=172.20.8.251 link=yes multicast=yes speed=10Gbit/s
