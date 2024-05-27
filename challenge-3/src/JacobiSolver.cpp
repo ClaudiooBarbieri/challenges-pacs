@@ -278,7 +278,7 @@ namespace challenge3{
             }
         }
 
-        //std::cout << "VTK produced: " << filename << std::endl;
+        std::cout << "VTK produced: " << filename << std::endl;
         svtkFile.close();
 
     };

@@ -11,7 +11,6 @@
 #include <algorithm>
 #include <fstream>
 #include <mpi.h>
-#include <omp.h>
 
 namespace challenge3 {
 

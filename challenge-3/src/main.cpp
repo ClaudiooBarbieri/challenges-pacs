@@ -4,10 +4,6 @@
 #include "JacobiSolver.hpp"
 #include "json.hpp"
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
 #include <iostream>
 #include <mpi.h>
 
