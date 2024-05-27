@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <fstream>
 #include <mpi.h>
+#include <omp.h>
 
 namespace challenge3 {
 
@@ -135,6 +136,26 @@ namespace challenge3 {
     * @param extra string put as "solution"+extra+".vtk"
     */
     void generateVTK(const std::vector<std::vector<double>> & sol, double x0, double y0, size_t nx, size_t ny, double hx, double hy,  const std::string & extra = "");
+
+    /**
+     * @brief compare the given solution vectorial form to the exact one wrt l2 norm
+     * @note do not take in account bondary condition
+     * @param mesh on which evaluate
+     * @param computed solution
+     * @param exact expression of exact solution
+     * @param nProcess number of processor used to compute solution
+    */
+    void compareSolution(const Mesh2D & mesh, const std::vector<double> & solution, const std::string & exact, int nProcess = 1);
+
+    /**
+     * @brief compare the given solution amtricial form to the exact one wrt l2 norm
+     * @note do not take in account bondary condition
+     * @param mesh on which evaluate
+     * @param computed solution
+     * @param exact expression of exact solution
+     * @param nProcess number of processor used to compute solution
+    */
+    void compareSolution(const Mesh2D & mesh, const std::vector<std::vector<double>> & solution, const std::string & exact, int nProcess = 1);
 
 }
 

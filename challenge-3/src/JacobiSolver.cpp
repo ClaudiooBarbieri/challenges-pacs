@@ -188,7 +188,6 @@ namespace challenge3{
         
             // middle rows
             for(size_t i = 1 ; i < localRows - 1 ; ++i){
-
                 for(size_t j = 1 ; j < nx-1; ++j){
 
                     x = mesh(firstRow + i,j).getX(); ///< coordinate x value on the mesh, offset wrt to first row of the current process
@@ -292,7 +291,8 @@ namespace challenge3{
             vecValues.insert(vecValues.end(), row.begin(), row.end());
         generateVTK(vecValues, x0, y0, nx, ny, hx, hy, extra);
 
-    };
+    }
+
 
     double norm(const std::vector<double> & v1 , const std::vector<double> & v2, double h, size_t nR, size_t nC) {
 
@@ -340,5 +340,61 @@ namespace challenge3{
 
     };
 
+    void compareSolution(const Mesh2D & mesh, const std::vector<double> & solution, const std::string & exact, int nProcess) {
+       
+       mu::Parser f; ///< parser of the exact solution
+
+        // parser variable
+        double x;
+        double y;
+
+        // set the parser
+        try {
+            
+            // set parser references variable
+            f.DefineVar("x", &x); 
+            f.DefineVar("y", &y);
+
+            f.SetExpr(exact); ///< set parser expression
+
+        }
+        catch (mu::Parser::exception_type &e) {
+
+            std::cerr << "Error: " << e.GetMsg() << std::endl;
+
+        }
+
+        // generate discrete solution using the exact result
+        size_t nx = mesh.getNx();
+        size_t ny = mesh.getNy();
+
+        std::vector<double> exacSol(nx*ny,0);
+        for(size_t i = 0 ; i < ny ; ++i){
+            for(size_t j = 0 ; j < nx ; ++j){
+
+                x = mesh(i, j).getX(); ///< coordinate x value on the mesh, offset wrt to first row of the current process
+                y = mesh(i, j).getY(); ///< coordinate y value on the mesh, offset wrt to first row of the current process
+
+                exacSol[i*nx + j] = f.Eval(); ///<  exact value on point (i,j)
+
+            }
+        }
+
+        double error = norm(solution, exacSol, std::max(mesh.getHx(), mesh.getHy()), ny, nx); ///< error between exact and computed solution
+
+        std::cout << "Error using " << nx << " point along X, " << ny << " points along Y and " << nProcess << " processes: " << error << std::endl;
+
+    };
+
+    void compareSolution(const Mesh2D & mesh, const std::vector<std::vector<double>> & solution, const std::string & exact, int nProcess) {
+       
+        // flatten local solution into a vector for gathering
+        std::vector<double> vecSol;
+        for (const auto& row : solution) 
+            vecSol.insert(vecSol.end(), row.begin(), row.end());
+
+        compareSolution(mesh, vecSol, exact, nProcess);       
+
+    };
 
 }

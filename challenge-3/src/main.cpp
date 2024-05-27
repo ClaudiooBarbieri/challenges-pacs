@@ -61,11 +61,31 @@ int main(int argc, char* argv[]){
   // init the solver
   JacobiSolver js(mesh,p.f,p.maxIter,p.tol,p.fBound);
 
-  // solve
-  if(rank == 0)
-    js.solve();
+  // Start time measurement
+  double startTime = MPI_Wtime();
 
-  parallelSolve(mesh,p.f,p.maxIter,p.tol);
+  // parallel solve
+  std::vector<double> parallelSol = parallelSolve(mesh,p.f,p.maxIter,p.tol);
+
+  // End time measurement
+  double endTime = MPI_Wtime();
+
+  // comapre solutions
+  if(rank == 0){
+
+    compareSolution(mesh,parallelSol,p.exactSol,size);
+
+    std::cout <<"Elapsed time: " << endTime - startTime << " seconds" << std::endl;
+
+    startTime = MPI_Wtime();
+    auto sSol = js.solve();
+    endTime = MPI_Wtime();
+    
+    compareSolution(mesh,sSol,p.exactSol);
+
+    std::cout <<"Elapsed time: " << endTime - startTime << " seconds" << std::endl;
+
+  }
 
   MPI_Barrier(MPI_COMM_WORLD);
 

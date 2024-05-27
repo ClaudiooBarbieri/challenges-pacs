@@ -12,14 +12,14 @@ MY_INCLUDE = ../include
 ADDITIONAL_PATH = 
 
 # Compiler variables
-CXXFLAGS = -std=c++20 -O3 -fPIC
+CXXFLAGS = -fopenmp -std=c++20 -O3 -fPIC 
 CPPFLAGS = -DNDEBUG -I${EXAMPLES_INCLUDE} -I${MY_INCLUDE}
 LDFLAGS = -L. -Wl,-rpath=$(EXAMPLES_LIB) -L${EXAMPLES_LIB}
-LDLIBS = -lmuparser
+LDLIBS = -lmuparser -lgomp
 
 # MPI compiler variables
-MPI_CXX = mpic++
-MPI_LDLIBS = -lmpi
+MPI_CXX = mpic++ -fopenmp
+MPI_LDLIBS = -lmuparser -lmpi -lgomp
 
 # Files
 # Source file
@@ -44,7 +44,7 @@ $(EXEC): $(OBJS)
 %.o: %.cpp $(HEADS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-# MPI compiling routine
+# parallel compiling routine
 mpi: $(MPI_EXEC)
 
 $(MPI_EXEC): $(OBJS)
