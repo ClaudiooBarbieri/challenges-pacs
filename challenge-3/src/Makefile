@@ -12,14 +12,16 @@ MY_INCLUDE = ../include
 ADDITIONAL_PATH = 
 
 # Compiler variables
-CXXFLAGS = -fopenmp -std=c++20 -O3 -fPIC 
+CXXFLAGS = -std=c++20 -O3 -fPIC 
 CPPFLAGS = -DNDEBUG -I${EXAMPLES_INCLUDE} -I${MY_INCLUDE}
 LDFLAGS = -L. -Wl,-rpath=$(EXAMPLES_LIB) -L${EXAMPLES_LIB}
-LDLIBS = -lmuparser -lgomp
+LDLIBS = -lmuparser -lmpi 
 
 # Parallel compiler variables
-P_CXX = mpic++ -fopenmp
-P_LDLIBS = -lmuparser -lmpi -lgomp
+P_CXX = mpic++
+P_CXXFLAGS = -fopenmp $(CXXFLAGS)
+P_CPPFLAGS = $(CPPFLAGS)
+P_LDLIBS = -lmuparser -lmpi
 
 # Files
 # Source file
@@ -38,17 +40,19 @@ P_EXEC = main_parallel
 all: $(EXEC)
 
 $(EXEC): $(OBJS)
-	$(CXX) $(LDFLAGS) $(OBJS) -o $(EXEC) $(LDLIBS) $(P_LDLIBS)
+	$(CXX) $(LDFLAGS) $(OBJS) -o $(EXEC) $(LDLIBS)
 
-# Pattern rule for object files
 %.o: %.cpp $(HEADS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-# parallel compiling routine
+# Parallel compiling routine
 parallel: $(P_EXEC)
 
 $(P_EXEC): $(OBJS)
 	$(P_CXX) $(LDFLAGS) $(OBJS) -o $(P_EXEC) $(LDLIBS) $(P_LDLIBS)
+
+%.o: %.cpp $(HEADS)
+	$(P_CXX) $(P_CPPFLAGS) $(P_CXXFLAGS) -c $< -o $@
 
 clean:
 	$(RM) $(OBJS) $(EXEC) $(P_EXEC)

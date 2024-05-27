@@ -67,8 +67,8 @@ namespace challenge3{
         double e = tol;
 
         // Jacobi iteration
-        
         for(size_t k = 0 ; k < nMax && e >= tol; ++k){
+
             for(size_t i = 1 ; i < ny-1 ; ++i){
                 for(size_t j = 1 ; j < nx-1; ++j){
                     x = mesh(i,j).getX(); ///< coordinate x value on the mesh
@@ -103,7 +103,6 @@ namespace challenge3{
         if(ny / size < 2)
             throw std::invalid_argument("Too much processes wrt to rows, at least two rows at each process");
         
-
         mu::Parser f; ///< parser of the function
 
         // parser variable
@@ -185,9 +184,10 @@ namespace challenge3{
                     localNewSol[i][j] = .25*(localSol[i+1][j]+belowRow[j]+localSol[i][j+1]+localSol[i][j-1]+hx*hy*f.Eval()); ///<  four point stencil
                 }
             }
-        
+
             // middle rows
             for(size_t i = 1 ; i < localRows - 1 ; ++i){
+
                 for(size_t j = 1 ; j < nx-1; ++j){
 
                     x = mesh(firstRow + i,j).getX(); ///< coordinate x value on the mesh, offset wrt to first row of the current process
@@ -207,7 +207,7 @@ namespace challenge3{
             MPI_Allreduce(MPI_IN_PLACE, &allConverged, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD); ///< sum to consider how much processes converged
             
         }
-        
+
         MPI_Barrier(MPI_COMM_WORLD);
 
         // assemble the global solution
@@ -232,7 +232,7 @@ namespace challenge3{
         MPI_Allgatherv(vecLocalS.data(), nElem, MPI_DOUBLE, globalSol.data(), nReceive.data(), vDisplacement.data(), MPI_DOUBLE, MPI_COMM_WORLD);
         
         if(rank == 0) ///< first process writes the vtk file
-            generateVTK(globalSol, mesh.getMinX(), mesh.getMinY(), nx, ny, hx, hy, "_parallel"+std::to_string(size));
+            generateVTK(globalSol, mesh.getMinX(), mesh.getMinY(), nx, ny, hx, hy, "_"+std::to_string(size)+"parallel_n_"+std::to_string(nx)+"_"+std::to_string(ny));
         
         return globalSol;
             
@@ -278,7 +278,7 @@ namespace challenge3{
             }
         }
 
-        std::cout << "VTK produced: " << filename << std::endl;
+        //std::cout << "VTK produced: " << filename << std::endl;
         svtkFile.close();
 
     };

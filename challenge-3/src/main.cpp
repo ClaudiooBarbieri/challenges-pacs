@@ -4,8 +4,11 @@
 #include "JacobiSolver.hpp"
 #include "json.hpp"
 
-#include <iostream>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
+
+#include <iostream>
 #include <mpi.h>
 
 using challenge3::Point2D;
@@ -58,9 +61,6 @@ int main(int argc, char* argv[]){
   // initialize mesh
   Mesh2D mesh = Mesh2D::createWithPoints(p.x0,p.xn,p.y0,p.yn,p.nx,p.ny);
 
-  // init the solver
-  JacobiSolver js(mesh,p.f,p.maxIter,p.tol,p.fBound);
-
   // Start time measurement
   double startTime = MPI_Wtime();
 
@@ -75,15 +75,7 @@ int main(int argc, char* argv[]){
 
     compareSolution(mesh,parallelSol,p.exactSol,size);
 
-    std::cout <<"Elapsed time: " << endTime - startTime << " seconds" << std::endl;
-
-    startTime = MPI_Wtime();
-    auto sSol = js.solve();
-    endTime = MPI_Wtime();
-    
-    compareSolution(mesh,sSol,p.exactSol);
-
-    std::cout <<"Elapsed time: " << endTime - startTime << " seconds" << std::endl;
+    std::cout << "Elapsed time: " << endTime - startTime << " seconds" << std::endl << std::endl;;
 
   }
 

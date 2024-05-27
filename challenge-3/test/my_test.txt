@@ -1,0 +1,72 @@
+RESULT KEEPING MAX NUMBER OF ITERATION FIXED AT 100000 AND TOLERANCE 1e-6
+
+*************************************************************************
+
+Running mpiexec with 1
+Error using 16 point along X, 16 points along Y and 1 processes: 0.028555
+Elapsed time: 0.00326881 seconds
+
+Running mpiexec with 2
+Error using 16 point along X, 16 points along Y and 2 processes: 0.0285507
+Elapsed time: 0.00300299 seconds
+
+Running mpiexec with 4
+Error using 16 point along X, 16 points along Y and 4 processes: 0.0285463
+Elapsed time: 0.0202277 seconds
+
+**************************************************************************
+
+Running mpiexec with 1
+Error using 32 point along X, 32 points along Y and 1 processes: 0.00950241
+Elapsed time: 0.0256645 seconds
+
+Running mpiexec with 2
+Error using 32 point along X, 32 points along Y and 2 processes: 0.0094824
+Elapsed time: 0.0303188 seconds
+
+Running mpiexec with 4
+Error using 32 point along X, 32 points along Y and 4 processes: 0.00945785
+Elapsed time: 0.0194439 seconds
+
+***************************************************************************
+
+Running mpiexec with 1
+Error using 64 point along X, 64 points along Y and 1 processes: 0.0030916
+Elapsed time: 0.35088 seconds
+
+Running mpiexec with 2
+Error using 64 point along X, 64 points along Y and 2 processes: 0.00300832
+Elapsed time: 0.21104 seconds
+
+Running mpiexec with 4
+Error using 64 point along X, 64 points along Y and 4 processes: 0.0028982
+Elapsed time: 0.18708 seconds
+
+**************************************************************************
+
+Running mpiexec with 1
+Error using 128 point along X, 128 points along Y and 1 processes: 0.000334006
+Elapsed time: 5.35346 seconds
+
+Running mpiexec with 2
+Error using 128 point along X, 128 points along Y and 2 processes: 3.66815e-06
+Elapsed time: 3.42807 seconds
+
+Running mpiexec with 4
+Error using 128 point along X, 128 points along Y and 4 processes: 0.000469235
+Elapsed time: 2.06312 seconds
+
+***************************************************************************
+
+Running mpiexec with 1
+Error using 256 point along X, 256 points along Y and 1 processes: 0.00288879
+Elapsed time: 73.3891 seconds
+
+Running mpiexec with 2
+Error using 256 point along X, 256 points along Y and 2 processes: 0.0042533
+Elapsed time: 41.1185 seconds
+
+Running mpiexec with 4
+Error using 256 point along X, 256 points along Y and 4 processes: 0.00615533
+Elapsed time: 28.4914 seconds
+
