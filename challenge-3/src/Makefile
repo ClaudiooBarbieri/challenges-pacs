@@ -17,9 +17,9 @@ CPPFLAGS = -DNDEBUG -I${EXAMPLES_INCLUDE} -I${MY_INCLUDE}
 LDFLAGS = -L. -Wl,-rpath=$(EXAMPLES_LIB) -L${EXAMPLES_LIB}
 LDLIBS = -lmuparser -lgomp
 
-# MPI compiler variables
-MPI_CXX = mpic++ -fopenmp
-MPI_LDLIBS = -lmuparser -lmpi -lgomp
+# Parallel compiler variables
+P_CXX = mpic++ -fopenmp
+P_LDLIBS = -lmuparser -lmpi -lgomp
 
 # Files
 # Source file
@@ -30,25 +30,25 @@ OBJS = $(SRCS:.cpp=.o)
 HEADS = $(wildcard ${MY_INCLUDE}/*.hpp)
 # Executable names
 EXEC = main
-MPI_EXEC = main_mpi
+P_EXEC = main_parallel
 
-.PHONY: all clean mpi
+.PHONY: all clean parallel
 
 # Compiling routine
 all: $(EXEC)
 
 $(EXEC): $(OBJS)
-	$(CXX) $(LDFLAGS) $(OBJS) -o $(EXEC) $(LDLIBS) $(MPI_LDLIBS)
+	$(CXX) $(LDFLAGS) $(OBJS) -o $(EXEC) $(LDLIBS) $(P_LDLIBS)
 
 # Pattern rule for object files
 %.o: %.cpp $(HEADS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 # parallel compiling routine
-mpi: $(MPI_EXEC)
+parallel: $(P_EXEC)
 
-$(MPI_EXEC): $(OBJS)
-	$(MPI_CXX) $(LDFLAGS) $(OBJS) -o $(MPI_EXEC) $(LDLIBS) $(MPI_LDLIBS)
+$(P_EXEC): $(OBJS)
+	$(P_CXX) $(LDFLAGS) $(OBJS) -o $(P_EXEC) $(LDLIBS) $(P_LDLIBS)
 
 clean:
-	$(RM) $(OBJS) $(EXEC) $(MPI_EXEC)
+	$(RM) $(OBJS) $(EXEC) $(P_EXEC)
