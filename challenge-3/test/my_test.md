@@ -1,4 +1,4 @@
-| Point X | Point Y | Processes | Tolerance | Max Iterations | Error              | Elapsed Time |
+| Point X | Point Y | Processes | Tolerance | Max Iterations | Error              | Elapsed Time(s) |
 |---------|---------|-----------|-----------|----------------|--------------------|--------------|
 | 16      | 16      | 1         | 1e-6      | 100000         | 2.8555e-02         | 0.00326881   |
 |         |         | 2         | 1e-6      | 100000         | 2.85507e-02        | 0.00300299   |
