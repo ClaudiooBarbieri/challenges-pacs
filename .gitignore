@@ -27,7 +27,8 @@
 *.lib
 
 # Executables
-main
+main*
+!main*.cpp  # Exception for files that have an extension cpp
 *.exe
 *.out
 *.app
