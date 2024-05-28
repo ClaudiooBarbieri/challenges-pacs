@@ -27,7 +27,7 @@
 | 256     | 256     | 1         | 1e-6      | 100000         | 2.88879e-03        | 62.1941          |
 
 ## Comparing
-| Point X | Point Y | Processes (MPI) |  Elapsed Time (s) (MPI) |  Elapsed Time (s) (Jacobi) | Time Gain (%) | Error Difference     |
+| Point X | Point Y | Processes (MPI) |  Elapsed Time (s) (MPI) |  Elapsed Time (s) (Jacobi) | Time Gain (%)* | Error Difference     |
 |---------|---------|-----------|-------------------------|----------------------------|---------------|----------------------|
 | 16      | 16      | 1         |  0.00326881             |  0.00199697                | -63.65%        | 0                    |
 |         |         | 2         |  0.00300299             |  0.00199697                | -50.36%        | 4.3e-06              |
@@ -44,3 +44,6 @@
 | 256     | 256     | 1         |  73.3891                |  62.1941                   | -18.03%        | 0                    |
 |         |         | 2         |  41.1185                |  62.1941                   | 33.90%       | 1.3645e-03           |
 |         |         | 4         |  28.4914                |  62.1941                   | 54.19%       | 3.2665e-03           |
+
+###### *positive mean faster in MPI
+
