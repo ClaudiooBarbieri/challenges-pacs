@@ -70,3 +70,22 @@ Running mpiexec with 4
 Error using 256 point along X, 256 points along Y and 4 processes: 0.00615533
 Elapsed time: 28.4914 seconds
 
+*****************************************************************************
+********************** Using JacobiSolver ***********************************
+*****************************************************************************
+
+Error using 16 point along X, 16 points along Y and 1 processes: 0.028555
+Elapsed time: 0.00199697 seconds
+
+Error using 32 point along X, 32 points along Y and 1 processes: 0.00950241
+Elapsed time: 0.0219378 seconds
+
+Error using 64 point along X, 64 points along Y and 1 processes: 0.0030916
+Elapsed time: 0.291304 seconds
+
+Error using 128 point along X, 128 points along Y and 1 processes: 0.000334006
+Elapsed time: 4.12949 seconds
+
+Error using 256 point along X, 256 points along Y and 1 processes: 0.00288879
+Elapsed time: 62.1941 seconds
+

@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <mpi.h>
+#include "chrono.hpp"
 
 using challenge3::Point2D;
 using challenge3::Domain2D;
@@ -71,7 +72,7 @@ int main(int argc, char* argv[]){
 
     compareSolution(mesh,parallelSol,p.exactSol,size);
 
-    std::cout << "Elapsed time: " << endTime - startTime << " seconds" << std::endl << std::endl;;
+    std::cout << "Elapsed time: " << endTime - startTime << " seconds" << std::endl << std::endl;
 
   }
 

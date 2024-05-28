@@ -6,7 +6,7 @@ All the details about the problem can be found in : [Challenge 3](../challenge-3
 
 #### Setup `PACS_ROOT` Variable in the [Makefile](../challenge-3/src/Makefile)
 
-To configure the build environment, you need to specify the path directory to your `Examples` of [PACS](https://github.com/pacs-course/pacs-examples.git), you need Need `muParser` and `MPI` libraries. Also need of `json.hpp`
+To configure the build environment, you need to specify the path directory to your `Examples` of [PACS](https://github.com/pacs-course/pacs-examples.git), you need Need `muParser` and `MPI` libraries. Also need of `json.hpp`.
 
 ```makefile
 PACS_ROOT = your path
@@ -97,7 +97,7 @@ exact solution and prints error and elapsed time.
 
 ## Testing 
 
-In the folder [test](../challenge-3/test/) you can find a [script](../challenge-3/test/test.sh) that runs a small scalability test with 1,2 and 4 processes according to the parameters contained in the JSON parameter [file](../challenge-3/data/param.json).
+In the folder [test](../challenge-3/test/) you can find a [script](../challenge-3/test/test.sh) that runs a small scalability test with 1,2 and 4 processes according to the parameters contained in the JSON parameter [file](../challenge-3/data/param.json). Ypu can try also with different values.
 
 There [my result](../challenge-3/test/my_test.md) and [hardware info](../challenge-3/HWinfo/)
 
@@ -106,7 +106,8 @@ To run the test, go to `../challenge-3/test/` and run
 ```bash
 ./test.sh
 ```
-
+##### note
+Test with `JacobiSover` are made using `chrono.hpp` of PACS library, in order to use it need to link `-lpacs`. [code](../challenge-3/test/mainTest.cpp)
 
 
 
