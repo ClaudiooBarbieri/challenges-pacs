@@ -107,6 +107,7 @@ To run the test, go to `../challenge-3/test/` and run
 ./test.sh
 ```
 ##### note
+not able to implement efficient OMP
 Test with `JacobiSover` are made using `chrono.hpp` of PACS library, in order to use it need to link `-lpacs`. [code](../challenge-3/test/mainTest.cpp)
 
 
