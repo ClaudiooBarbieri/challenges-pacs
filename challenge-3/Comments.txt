@@ -1,0 +1,11 @@
+README is perfect. Great job!
+
+test:
+  - don't recompile the library. The executable should be already compiled.
+  - nice presentation of the results with markdown!
+
+solution: nice tweak for paraview: good job!
+
+
+The code quality is overall very good. Nice job!
+Unfortunatly no openMP solution.. 
